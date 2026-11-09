@@ -1,0 +1,98 @@
+{
+  "name": "echoform",
+  "productName": "ECHOFORM",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A world that exists only while you are present. Live breath and pulse become a generative ecosystem.",
+  "author": "Senthil Raja R",
+  "license": "MIT",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "concurrently -k -s first \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && cross-env ECHOFORM_DEV_URL=http://127.0.0.1:5173 electron .\"",
+    "build": "tsc --noEmit && vite build",
+    "start": "electron .",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "pack:win": "npm run build && electron-builder --win --x64",
+    "pack:mac": "npm run build && electron-builder --mac --arm64",
+    "pack:linux": "npm run build && electron-builder --linux --x64"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "@react-three/postprocessing": "^3.2.2",
+    "@smartspectra/node-sdk": "^3.4.0",
+    "lucide-react": "^1.70.0",
+    "postprocessing": "^6.39.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "^0.187.0",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/three": "^0.187.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "concurrently": "^9.2.0",
+    "cross-env": "^10.1.0",
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
+    "typescript": "5.9.3",
+    "vite": "^8.3.7",
+    "wait-on": "^9.0.1"
+  },
+  "build": {
+    "appId": "com.echoform.world",
+    "productName": "ECHOFORM",
+    "asar": true,
+    "files": [
+      "dist/**",
+      "electron/**",
+      "package.json",
+      "node_modules/**",
+      "!node_modules/@smartspectra/node-sdk-*/**",
+      "!node_modules/@smartspectra/node-sdk/scripts/**",
+      "!node_modules/@smartspectra/node-sdk/test/**",
+      "!node_modules/@smartspectra/node-sdk/samples/**",
+      "!node_modules/@smartspectra/node-sdk/prebuilds/**"
+    ],
+    "mac": {
+      "category": "public.app-category.entertainment",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSCameraUsageDescription": "ECHOFORM uses the camera to sense breath and pulse on your device. It never records video."
+      },
+      "extraResources": [
+        {
+          "from": "node_modules/@smartspectra/node-sdk-darwin-${arch}/",
+          "to": "smartspectra/"
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "extraResources": [
+        {
+          "from": "node_modules/@smartspectra/node-sdk-win32-${arch}/",
+          "to": "smartspectra/"
+        }
+      ]
+    },
+    "linux": {
+      "target": "AppImage",
+      "extraResources": [
+        {
+          "from": "node_modules/@smartspectra/node-sdk-linux-${arch}/",
+          "to": "smartspectra/"
+        }
+      ]
+    }
+  }
+}

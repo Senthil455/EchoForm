@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; worker-src 'self' blob:; connect-src 'self' ws://127.0.0.1:5173 http://127.0.0.1:5173 ws://localhost:5173 http://localhost:5173 https://*.presagetech.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none';"
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#06100e" />
+    <meta
+      name="description"
+      content="ECHOFORM is a world that exists only while you are present. Live breath and pulse become a generative ecosystem."
+    />
+    <title>ECHOFORM</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #06100e;
+        color: #e9e2d0;
+      }
+      body {
+        overflow: hidden;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      .boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 55%, #0a1a16 0%, #06100e 55%, #030807 100%);
+        color: #9fbe8b;
+        font-family: system-ui, sans-serif;
+        letter-spacing: 0.28em;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+      .boot::after {
+        content: '';
+        width: 34px;
+        height: 34px;
+        margin-left: 16px;
+        border: 1px solid rgba(143, 227, 207, 0.35);
+        border-top-color: #8fe3cf;
+        border-radius: 50%;
+        animation: bootSpin 1.4s linear infinite;
+      }
+      @keyframes bootSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="boot">ECHOFORM</div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
