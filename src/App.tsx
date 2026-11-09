@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { EchoAudio } from './audio/EchoAudio';
 import { generateEchoPrint } from './artwork/EchoPrint';
-import { getApiKey, getBootstrap, isElectron, openExternal, saveArtwork } from './lib/api';
+import {
+  clearApiKey,
+  getApiKey,
+  getBootstrap,
+  isElectron,
+  openExternal,
+  saveArtwork,
+} from './lib/api';
 import { newSeed } from './lib/math';
 import { shortCode } from './lib/format';
-import { clearApiKey } from './lib/api';
 import { SignalEngine } from './signals/engine';
 import { signalRuntime } from './signals/runtime';
 import { LiveSession } from './signals/smartspectra';
@@ -597,8 +603,14 @@ export default function App() {
   }, [setSummary, setReplayOf, setPhase, setMode, updatePrefs]);
 
   // ── Render values ─────────────────────────────────────────────────────────
-  const paletteIndex = replayOf?.palette ?? (engine ? engine.seed % 6 : 0);
-  const worldSeed = replayOf?.seed ?? engine?.seed ?? 0x9e3779b9;
+  // Echo and replay screens no longer hold an engine, so their saved seed and
+  // palette must drive the world that sits behind the artwork.
+  const echoLook =
+    phase === 'echo' ? summary : phase === 'replay' ? (replayOf ?? summary) : null;
+  const paletteIndex = echoLook?.palette ?? (engine ? engine.seed % 6 : 0);
+  const worldSeed = echoLook?.seed ?? engine?.seed ?? 0x9e3779b9;
+  const worldReplayDuration =
+    phase === 'replay' ? (replayOf ?? summary)?.durationSec : undefined;
   const palette = paletteFor(paletteIndex);
   const showWorld = phase !== 'archive';
   const isReplayEcho = phase === 'echo' && replayOf != null;
@@ -618,14 +630,18 @@ export default function App() {
   }, [setError, beginSynthetic]);
 
   return (
-    <div className="app" data-phase={phase} data-mode={mode}>
+    <div
+      className={`app${prefs.reducedMotion ? ' reduced-motion' : ''}`}
+      data-phase={phase}
+      data-mode={mode}
+    >
       {showWorld && (
         <WorldCanvas
           phase={phase}
           paletteIndex={paletteIndex}
           seed={worldSeed}
           reducedMotion={prefs.reducedMotion}
-          replayDuration={replayOf?.durationSec}
+          replayDuration={worldReplayDuration}
         />
       )}
       <div

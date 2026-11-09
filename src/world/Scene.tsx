@@ -1,11 +1,11 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { clamp, damp } from '../../lib/math';
-import { signalRuntime } from '../../signals/runtime';
-import type { Phase } from '../../state/types';
-import type { Palette } from '../palettes';
-import { worldSignals, type WorldQuality } from '../types';
+import { clamp, damp } from '../lib/math';
+import { signalRuntime } from '../signals/runtime';
+import type { Phase } from '../state/types';
+import type { Palette } from './palettes';
+import { worldSignals, type WorldQuality } from './types';
 import { BreathField } from './components/BreathField';
 import { CameraRig } from './components/CameraRig';
 import { Core } from './components/Core';

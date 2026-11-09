@@ -7,7 +7,6 @@ import {
   Trash2,
   WifiOff,
 } from 'lucide-react';
-import { formatRate } from '../lib/format';
 import type { BootstrapInfo, Mode, Preferences } from '../state/types';
 import { Modal, Toggle } from './common';
 
@@ -228,11 +227,13 @@ export function SettingsSheet({
           onChange={(expressionWeather) => onChange({ expressionWeather })}
           label="Expression weather"
           description={
-            mode === 'live'
-              ? 'Off by default. Adds an abstract, unlabeled color weather from the SDK face output. It is never shown as an emotion.'
-              : 'Available in live sessions when a Presage key and face metrics are available.'
+            replay
+              ? 'Unavailable in a replay. The saved echo holds aggregate signals only, never face data.'
+              : mode === 'live'
+                ? 'Off by default. Adds an abstract, unlabeled color weather from the SDK face output. It is never shown as an emotion.'
+                : 'Available in live sessions when a Presage key and face metrics are available.'
           }
-          disabled={mode !== 'live'}
+          disabled={mode !== 'live' || replay}
         />
       </div>
 
@@ -241,10 +242,6 @@ export function SettingsSheet({
         <div className="settings-status">
           <span>Session type</span>
           <span>{replay ? 'Replay · camera off' : mode === 'live' ? 'Live camera' : 'Synthetic · camera off'}</span>
-        </div>
-        <div className="settings-status">
-          <span>Pulse / breath</span>
-          <span>{formatRate(null, '') /* placeholder replaced below */}</span>
         </div>
         <Toggle
           checked={prefs.telemetry}
