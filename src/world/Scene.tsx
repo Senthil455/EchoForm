@@ -25,8 +25,6 @@ interface Props {
   replayDuration?: number;
 }
 
-const GROWTH_SECONDS = 240;
-
 /**
  * Converts the UI phase + the latest signal frame into the mutable uniform
  * contract every world component reads. Runs before the visual layers so the
@@ -41,9 +39,9 @@ function WorldState({ phase, reducedMotion, replayDuration }: Omit<Props, 'palet
 
     const worldActive = phase === 'attuning' || phase === 'alive' || phase === 'replay';
     const presenceFloor =
-      phase === 'threshold' || phase === 'consent' ? 0.1 : phase === 'archive' ? 0.02 : 0;
+      phase === 'threshold' || phase === 'consent' ? 0.15 : phase === 'archive' ? 0.02 : 0;
     let presenceTarget = Math.max(frame.presence, presenceFloor);
-    if (phase === 'echo') presenceTarget = 0.14;
+    if (phase === 'echo') presenceTarget = 0.2;
     if (phase === 'archive') presenceTarget = 0.02;
 
     const awakeTarget =
@@ -62,14 +60,17 @@ function WorldState({ phase, reducedMotion, replayDuration }: Omit<Props, 'palet
     const phase01 = running && phase !== 'echo' ? frame.pulse.beatPhase : (t * 0.94) % 1;
     const pulse = Math.exp(-phase01 * 4.3) * (running && phase !== 'echo' ? 1 : 0.42);
 
-    let growthTarget = 0.18;
-    if (phase === 'attuning') growthTarget = 0.24;
-    if (phase === 'alive' || phase === 'echo') {
-      growthTarget = 0.24 + 0.76 * (1 - Math.exp(-frame.t / 95));
+    let growthTarget = 0.26;
+    if (phase === 'attuning') growthTarget = 0.34;
+    if (phase === 'alive') {
+      growthTarget = 0.4 + 0.6 * (1 - Math.exp(-frame.t / 120));
+    }
+    if (phase === 'echo') {
+      growthTarget = 0.4 + 0.6 * (1 - Math.exp(-(frame.t || 150) / 120));
     }
     if (phase === 'replay') {
       const elapsed = replayDuration ?? 0;
-      growthTarget = 0.24 + 0.76 * (1 - Math.exp(-elapsed / 95));
+      growthTarget = 0.4 + 0.6 * (1 - Math.exp(-elapsed / 120));
     }
 
     const s = worldSignals;

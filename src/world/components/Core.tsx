@@ -72,7 +72,7 @@ export function Core({ palette }: Props) {
   return (
     <group ref={group} position={[0, 0.22, 0]}>
       <mesh>
-        <icosahedronGeometry args={[0.54, 7]} />
+        <icosahedronGeometry args={[0.68, 7]} />
         <shaderMaterial
           uniforms={coreUniforms}
           vertexShader={coreVertex}
@@ -86,7 +86,7 @@ export function Core({ palette }: Props) {
 
       <Billboard>
         <mesh>
-          <planeGeometry args={[7.4, 7.4]} />
+          <planeGeometry args={[8.8, 8.8]} />
           <shaderMaterial
             uniforms={haloUniforms}
             vertexShader={haloVertex}

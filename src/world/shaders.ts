@@ -201,7 +201,7 @@ void main() {
   vec3 col = mix(uCore * 0.6, uCoreHot * 1.5, uPulse * 0.65);
   col = mix(col, uField, fres * 0.5);
 
-  float alpha = (0.16 + fres * 0.78 + uPulse * 0.16) * uPresence;
+  float alpha = (0.24 + fres * 0.8 + uPulse * 0.22) * uPresence;
   gl_FragColor = vec4(col, alpha);
 }
 `;
@@ -227,7 +227,7 @@ void main() {
   float a = smoothstep(1.0, 0.0, d);
   a = pow(a, 2.6);
   vec3 col = mix(uCoreHot, uCore, a);
-  gl_FragColor = vec4(col * 1.25, a * (0.12 + uPulse * 0.24) * uPresence);
+  gl_FragColor = vec4(col * 1.25, a * (0.18 + uPulse * 0.28) * uPresence);
 }
 `;
 
@@ -274,7 +274,7 @@ varying float vAlpha;
 void main() {
   vec3 col = mix(uColorA, uColorB, smoothstep(0.0, 0.85, vProgress));
   col = mix(col, uCore, vTip * 0.9);
-  float a = vAlpha * (0.24 + 0.62 * vTip);
+  float a = vAlpha * (0.32 + 0.6 * vTip);
   if (a < 0.004) discard;
   gl_FragColor = vec4(col, a);
 }
@@ -375,7 +375,16 @@ void main() {
   float aurora = sin(dir.x * 3.6 + uTime * 0.045)
     * sin(dir.z * 2.4 - uTime * 0.032)
     * smoothstep(0.1, 0.85, h);
-  col += uAccent * max(0.0, aurora) * 0.018 * (0.4 + uPresence * 0.6);
+  col += uAccent * max(0.0, aurora) * 0.025 * (0.4 + uPresence * 0.6);
+
+  // A quiet luminous depth behind the organism, so the horizon never reads
+  // as flat black.
+  vec3 towardField = normalize(vec3(0.0, 0.0, -1.0));
+  float halo = pow(max(0.0, dot(dir, towardField)), 5.0);
+  col += uAccent * halo * 0.055 * (0.35 + uPresence * 0.65);
+  float horizon = exp(-abs(dir.y + 0.02) * 11.0);
+  col += uAccent * horizon * 0.028 * (0.3 + uPresence * 0.7);
+
   gl_FragColor = vec4(col, 1.0);
 }
 `;

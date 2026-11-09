@@ -2,40 +2,14 @@
   {
     "scene": "threshold",
     "url": "http://127.0.0.1:5173/?scene=threshold",
-    "file": "C:\\Users\\senth\\Downloads\\Projects\\EchoForm\\.qa\\threshold.png",
-    "failures": [],
+    "failures": [
+      "Error: Current display surface not available for capture"
+    ],
     "console": [
       "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element.",
       "[vite] connecting...",
       "[vite] connected.",
-      "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
-      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
-    ]
-  },
-  {
-    "scene": "consent",
-    "url": "http://127.0.0.1:5173/?scene=consent",
-    "file": "C:\\Users\\senth\\Downloads\\Projects\\EchoForm\\.qa\\consent.png",
-    "failures": [],
-    "console": [
-      "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element.",
-      "[vite] connecting...",
-      "[vite] connected.",
-      "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
-      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
-    ]
-  },
-  {
-    "scene": "attuning-synthetic",
-    "url": "http://127.0.0.1:5173/?scene=attuning&mode=synthetic",
-    "file": "C:\\Users\\senth\\Downloads\\Projects\\EchoForm\\.qa\\attuning-synthetic.png",
-    "failures": [],
-    "console": [
-      "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element.",
-      "[vite] connecting...",
-      "[vite] connected.",
-      "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
-      "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
+      "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
     ]
   },
   {
@@ -62,18 +36,6 @@
       "[vite] connected.",
       "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
       "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead."
-    ]
-  },
-  {
-    "scene": "archive",
-    "url": "http://127.0.0.1:5173/?scene=archive",
-    "file": "C:\\Users\\senth\\Downloads\\Projects\\EchoForm\\.qa\\archive.png",
-    "failures": [],
-    "console": [
-      "The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element.",
-      "[vite] connecting...",
-      "[vite] connected.",
-      "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
     ]
   }
 ]

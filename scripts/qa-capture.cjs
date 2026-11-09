@@ -100,8 +100,24 @@ app.whenReady().then(async () => {
     try {
       console.log(`[qa] loading ${url}`);
       await win.loadURL(url);
-      await wait(scene.name === 'attuning-synthetic' ? 4200 : 2600);
-      const image = await win.webContents.capturePage();
+      const waitMs =
+        scene.name === 'attuning-synthetic'
+          ? 4200
+          : scene.name === 'alive-synthetic'
+            ? Number(process.env.QA_ALIVE_WAIT || 15000)
+            : 2600;
+      await wait(waitMs);
+      let image = null;
+      let lastError = null;
+      for (let attempt = 0; attempt < 4 && !image; attempt++) {
+        try {
+          image = await win.webContents.capturePage();
+        } catch (error) {
+          lastError = error;
+          await wait(600);
+        }
+      }
+      if (!image) throw lastError ?? new Error('capture failed');
       const file = path.join(OUT, `${slug(scene.name)}.png`);
       fs.writeFileSync(file, image.toPNG());
       report.push({ scene: scene.name, url, file, failures, console: logs.slice(-16) });
