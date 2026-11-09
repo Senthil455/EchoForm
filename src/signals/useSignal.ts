@@ -4,7 +4,8 @@ import { signalRuntime } from './runtime';
 
 /**
  * Owns the engine's clock. One rAF loop, independent of React and R3F.
- * Returns a ref so callers can build summaries and inspect the engine.
+ * The loop always reads the latest engine through a ref, so swapping sessions
+ * does not require tearing down the animation loop.
  */
 export function useSignalClock(engine: SignalEngine | null, active: boolean): void {
   const engineRef = useRef(engine);
@@ -22,8 +23,7 @@ export function useSignalClock(engine: SignalEngine | null, active: boolean): vo
       last = now;
       const current = engineRef.current;
       if (current) {
-        const frame = current.tick(dt);
-        signalRuntime.publish(frame);
+        signalRuntime.publish(current.tick(dt));
       }
       raf = requestAnimationFrame(loop);
     };
@@ -34,16 +34,4 @@ export function useSignalClock(engine: SignalEngine | null, active: boolean): vo
       cancelAnimationFrame(raf);
     };
   }, [active]);
-
-  // If the engine instance changes while active, the loop reads the latest ref.
-  useEffect(() => {
-    if (engine) lastStable = engine;
-  }, [engine]);
-}
-
-// Keep the most recent engine for components that need to build a summary
-// without waiting for a render. (Not used to drive visuals.)
-let lastStable: SignalEngine | null = null;
-export function getLastEngine(): SignalEngine | null {
-  return lastStable;
 }
