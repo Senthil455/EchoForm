@@ -25,14 +25,14 @@ export function BreathField({ palette, quality, seed }: Props) {
     const aSize = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
-      const radius = 1.15 + Math.pow(rand(), 0.68) * 5.6;
+      const radius = 1.9 + Math.pow(rand(), 0.7) * 4.2;
       const angle = rand() * Math.PI * 2;
-      const height = (rand() - 0.5) * 6.4 + Math.sin(angle * 2) * 0.35;
+      const height = (rand() - 0.5) * 5.2 + Math.sin(angle * 2) * 0.25;
       aSeed[i] = rand();
       aRadius[i] = radius;
       aAngle[i] = angle;
       aHeight[i] = height;
-      aSize[i] = 0.55 + rand() * 1.9;
+      aSize[i] = 0.4 + rand() * 1.35;
     }
 
     const geo = new THREE.BufferGeometry();
@@ -56,7 +56,7 @@ export function BreathField({ palette, quality, seed }: Props) {
       uPulse: { value: 0 },
       uPresence: { value: 0 },
       uReduced: { value: 0 },
-      uPointScale: { value: quality === 'high' ? 88 : quality === 'medium' ? 78 : 68 },
+      uPointScale: { value: quality === 'high' ? 26 : quality === 'medium' ? 22 : 18 },
       uColorA: { value: new THREE.Color(palette.field) },
       uColorB: { value: new THREE.Color(palette.accent) },
       uColorC: { value: new THREE.Color(palette.core) },

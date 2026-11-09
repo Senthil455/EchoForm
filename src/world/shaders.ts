@@ -76,15 +76,15 @@ void main() {
   gl_Position = projectionMatrix * mv;
 
   float dist = max(0.6, -mv.z);
-  gl_PointSize = aSize * uPointScale * (1.0 / dist) * (0.55 + uPresence * 0.75);
+  gl_PointSize = min(22.0, aSize * uPointScale * (1.0 / dist) * (0.55 + uPresence * 0.75));
 
   float mixv = clamp(aRadius / 6.4 + (height + 2.2) / 9.0, 0.0, 1.0);
   vec3 col = mix(uColorA, uColorB, mixv);
   col = mix(col, uColorC, uPulse * 0.32 * smoothstep(1.0, 4.5, aRadius));
 
   vColor = col;
-  float twinkle = 0.55 + 0.45 * sin(seed * 87.0 + t * 0.33);
-  vAlpha = (0.13 + 0.43 * uPresence) * twinkle;
+  float twinkle = 0.62 + 0.38 * sin(seed * 87.0 + t * 0.33);
+  vAlpha = (0.10 + 0.30 * uPresence) * twinkle;
 }
 `;
 
@@ -97,6 +97,7 @@ void main() {
   float d = length(c);
   if (d > 0.5) discard;
   float a = smoothstep(0.5, 0.04, d);
+  a = pow(a, 1.25);
   gl_FragColor = vec4(vColor, a * vAlpha);
 }
 `;
@@ -302,10 +303,10 @@ void main() {
 
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
-  gl_PointSize = aSize * uPointScale * (1.0 / max(0.8, -mv.z)) * (0.6 + uPresence * 0.5);
+  gl_PointSize = min(26.0, aSize * uPointScale * (1.0 / max(0.8, -mv.z)) * (0.6 + uPresence * 0.5));
 
   vColor = mix(uColorA, uColorB, aSeed);
-  vAlpha = (0.18 + uPresence * 0.34) * (0.5 + 0.5 * sin(aSeed * 44.0 + t * 0.5));
+  vAlpha = (0.12 + uPresence * 0.22) * (0.5 + 0.5 * sin(aSeed * 44.0 + t * 0.5));
 }
 `;
 

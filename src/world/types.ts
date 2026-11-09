@@ -22,7 +22,7 @@ export const worldSignals: WorldSignals = {
   pulse: 0,
   pulseRate: 0.5,
   presence: 0,
-  growth: 0.05,
+  growth: 0.18,
   awake: 0,
   echo: 0,
   hue: 0,
@@ -33,5 +33,5 @@ export const worldSignals: WorldSignals = {
 export type WorldQuality = 'low' | 'medium' | 'high';
 
 export function particleCount(quality: WorldQuality): number {
-  return quality === 'high' ? 48000 : quality === 'medium' ? 32000 : 18000;
+  return quality === 'high' ? 7200 : quality === 'medium' ? 4400 : 2400;
 }

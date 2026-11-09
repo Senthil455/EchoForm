@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function SporeDust({ palette, seed, quality }: Props) {
-  const count = quality === 'high' ? 780 : quality === 'medium' ? 520 : 320;
+  const count = quality === 'high' ? 260 : quality === 'medium' ? 180 : 100;
 
   const geometry = useMemo(() => {
     const rand = mulberry32(seed ^ 0xcc9e2d51);
@@ -22,13 +22,13 @@ export function SporeDust({ palette, seed, quality }: Props) {
     const aSize = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
-      const radius = 1.2 + Math.pow(rand(), 0.55) * 7.4;
+      const radius = 2.0 + Math.pow(rand(), 0.55) * 4.8;
       const angle = rand() * Math.PI * 2;
       positions[i * 3 + 0] = Math.cos(angle) * radius;
-      positions[i * 3 + 1] = -2.4 + rand() * 7.2;
+      positions[i * 3 + 1] = -2.2 + rand() * 5.8;
       positions[i * 3 + 2] = Math.sin(angle) * radius;
       aSeed[i] = rand();
-      aSize[i] = 1.2 + rand() * 3.4;
+      aSize[i] = 0.9 + rand() * 2.4;
     }
 
     const geo = new THREE.BufferGeometry();
@@ -46,7 +46,7 @@ export function SporeDust({ palette, seed, quality }: Props) {
       uTime: { value: 0 },
       uPresence: { value: 0 },
       uReduced: { value: 0 },
-      uPointScale: { value: quality === 'high' ? 72 : quality === 'medium' ? 64 : 56 },
+      uPointScale: { value: quality === 'high' ? 30 : quality === 'medium' ? 26 : 22 },
       uColorA: { value: new THREE.Color(palette.field) },
       uColorB: { value: new THREE.Color(palette.core) },
     }),
