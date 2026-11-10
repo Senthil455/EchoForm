@@ -27,7 +27,7 @@ const MAX_HEIGHT = 6.4;
 function generateBranches(seed: number): Branch[] {
   const rand = mulberry32((seed ^ 0x85ebca6b) >>> 0);
   const branches: Branch[] = [];
-  const count = 300;
+  const count = 150;
 
   const addBranch = (origin: [number, number, number], height: number, spread: number) => {
     const segments = 7 + Math.floor(rand() * 3);
@@ -63,31 +63,24 @@ function generateBranches(seed: number): Branch[] {
 
   for (let i = 0; i < count; i++) {
     const angle = rand() * Math.PI * 2;
-    const radius = 1.25 + Math.pow(rand(), 0.62) * 3.25;
-    const inner = 1 - radius / 4.6;
-    const height = 1.6 + inner * 3.1 + rand() * 1.7;
+    const radius = 0.7 + Math.pow(rand(), 0.62) * 2.6;
+    const inner = 1 - radius / 4.1;
+    const height = 1.5 + inner * 2.7 + rand() * 1.3;
 
     addBranch(
       [Math.cos(angle) * radius, GROUND, Math.sin(angle) * radius],
       height,
-      0.55 + rand() * 0.7,
+      0.45 + rand() * 0.6,
     );
 
-    // Side twigs make the silhouette read as a living structure rather than
-    // a bundle of independent lines. They are rarer and shorter.
-    if (rand() < 0.3) {
-      const t = 0.42 + rand() * 0.34;
-      const baseAngle = angle + (rand() < 0.5 ? -1 : 1) * (0.7 + rand() * 0.8);
-      const twigRadius = radius + Math.sin(t * Math.PI * 0.8) * 0.8;
-      addBranch(
-        [
-          Math.cos(baseAngle) * twigRadius,
-          GROUND + height * t,
-          Math.sin(baseAngle) * twigRadius,
-        ],
-        0.6 + rand() * 1.25,
-        0.35,
-      );
+    // Fork from the parent stem's midpoint so the silhouette reads as one
+    // branching specimen rather than a bundle of independent lines.
+    if (rand() < 0.52) {
+      const parent = branches[branches.length - 1];
+      const t = 0.46 + rand() * 0.34;
+      const index = Math.min(parent.points.length - 2, Math.floor(t * parent.points.length));
+      const fork = parent.points[index];
+      addBranch([fork[0], fork[1], fork[2]], 0.7 + rand() * 1.5, 0.24 + rand() * 0.2);
     }
   }
 

@@ -76,7 +76,7 @@ void main() {
   gl_Position = projectionMatrix * mv;
 
   float dist = max(0.6, -mv.z);
-  gl_PointSize = min(22.0, aSize * uPointScale * (1.0 / dist) * (0.55 + uPresence * 0.75));
+  gl_PointSize = min(16.0, aSize * uPointScale * (1.0 / dist) * (0.55 + uPresence * 0.75));
 
   float mixv = clamp(aRadius / 6.4 + (height + 2.2) / 9.0, 0.0, 1.0);
   vec3 col = mix(uColorA, uColorB, mixv);
@@ -84,7 +84,7 @@ void main() {
 
   vColor = col;
   float twinkle = 0.62 + 0.38 * sin(seed * 87.0 + t * 0.33);
-  vAlpha = (0.10 + 0.30 * uPresence) * twinkle;
+  vAlpha = (0.09 + 0.26 * uPresence) * twinkle;
 }
 `;
 
@@ -143,7 +143,7 @@ void main() {
 
   vSide = aSide;
   vColor = mix(vec3(0.35, 0.85, 0.75), vec3(1.0, 0.72, 0.48), aProgress * 0.7);
-  vAlpha = (0.05 + 0.14 * uPresence) *
+  vAlpha = (0.04 + 0.12 * uPresence) *
     smoothstep(0.0, 0.08, aProgress) *
     smoothstep(1.0, 0.72, aProgress) *
     (0.6 + uPulse * 0.25);
@@ -168,14 +168,14 @@ void main() {
 `;
 
 export const coreVertex = /* glsl */ `
-varying vec3 vNormalW;
-varying vec3 vViewDir;
+varying vec3 vNormalV;
+varying vec3 vViewPos;
 
 void main() {
-  vec4 world = modelMatrix * vec4(position, 1.0);
-  vNormalW = normalize(mat3(modelMatrix) * normal);
-  vViewDir = normalize(cameraPosition - world.xyz);
-  gl_Position = projectionMatrix * viewMatrix * world;
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  vNormalV = normalize(normalMatrix * normal);
+  vViewPos = -mv.xyz;
+  gl_Position = projectionMatrix * mv;
 }
 `;
 
@@ -187,21 +187,28 @@ uniform vec3 uCore;
 uniform vec3 uCoreHot;
 uniform vec3 uField;
 
-varying vec3 vNormalW;
-varying vec3 vViewDir;
+varying vec3 vNormalV;
+varying vec3 vViewPos;
 
 void main() {
-  vec3 n = normalize(vNormalW);
-  vec3 v = normalize(vViewDir);
-  float fres = pow(1.0 - clamp(dot(n, v), 0.0, 1.0), 2.4);
+  vec3 n = normalize(vNormalV);
+  vec3 v = normalize(vViewPos);
+  float facing = clamp(dot(n, v), 0.0, 1.0);
+  float fres = pow(1.0 - facing, 2.2);
+
+  vec3 lightDir = normalize(vec3(0.42, 0.52, 0.74));
+  float diffuse = clamp(dot(n, lightDir), 0.0, 1.0);
+  float specular = pow(clamp(dot(reflect(-lightDir, n), v), 0.0, 1.0), 18.0);
 
   float bands = 0.5 + 0.5 * sin(n.y * 18.0 + uTime * 0.55 + sin(n.x * 9.0) * 1.4);
-  float glow = fres * 0.8 + bands * 0.12 + uPulse * 0.5;
+  float veins = 0.5 + 0.5 * sin(n.x * 11.0 + n.z * 7.0 + uTime * 0.27);
 
-  vec3 col = mix(uCore * 0.6, uCoreHot * 1.5, uPulse * 0.65);
-  col = mix(col, uField, fres * 0.5);
+  vec3 col = mix(uCore * 0.22, uCoreHot * 1.12, diffuse * 0.82 + bands * 0.12 + uPulse * 0.18);
+  col += uCoreHot * specular * 0.65;
+  col = mix(col, uField, fres * 0.58);
+  col = mix(col, uField, veins * 0.06);
 
-  float alpha = (0.24 + fres * 0.8 + uPulse * 0.22) * uPresence;
+  float alpha = (0.045 + fres * 0.62 + diffuse * 0.22 + specular * 0.32 + uPulse * 0.08) * uPresence;
   gl_FragColor = vec4(col, alpha);
 }
 `;
@@ -225,9 +232,9 @@ varying vec2 vUv;
 void main() {
   float d = length(vUv - 0.5) * 2.0;
   float a = smoothstep(1.0, 0.0, d);
-  a = pow(a, 2.6);
+  a = pow(a, 2.2);
   vec3 col = mix(uCoreHot, uCore, a);
-  gl_FragColor = vec4(col * 1.25, a * (0.18 + uPulse * 0.28) * uPresence);
+  gl_FragColor = vec4(col * 1.18, a * (0.17 + uPulse * 0.22) * uPresence);
 }
 `;
 
@@ -255,10 +262,57 @@ void main() {
   vProgress = aProgress;
   vTip = aTip;
 
-  float reveal = 1.0 - smoothstep(uGrowth - 0.035, uGrowth + 0.035, aProgress);
+  float reveal = 1.0 - smoothstep(uGrowth * 1.38 - 0.035, uGrowth * 1.38 + 0.035, aProgress);
   vAlpha = reveal * uPresence;
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+}
+`;
+
+export const organismTipVertex = /* glsl */ `
+uniform float uTime;
+uniform float uBreath;
+uniform float uPresence;
+uniform float uGrowth;
+uniform float uReduced;
+
+attribute float aProgress;
+attribute float aTip;
+
+varying float vAlpha;
+varying float vTip;
+
+void main() {
+  vec3 pos = position;
+  float sway = sin(uTime * 0.32 + aProgress * 9.0 + pos.y * 0.7)
+    * 0.055 * (aProgress * 0.8 + 0.2) * (1.0 - uReduced);
+  pos.x += sway + uBreath * 0.04 * (aProgress * 0.7 + 0.3);
+  pos.z += sway * 0.6;
+
+  vTip = aTip;
+  float reveal = 1.0 - smoothstep(uGrowth * 1.38 - 0.035, uGrowth * 1.38 + 0.035, aProgress);
+  vAlpha = reveal * uPresence * aTip;
+
+  vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+  gl_Position = projectionMatrix * mv;
+  gl_PointSize = (2.2 + aTip * 2.6) * (9.0 / max(2.0, -mv.z)) * (0.7 + uPresence * 0.6);
+}
+`;
+
+export const organismTipFragment = /* glsl */ `
+uniform vec3 uCore;
+uniform vec3 uAccent;
+
+varying float vAlpha;
+varying float vTip;
+
+void main() {
+  if (vTip < 0.5) discard;
+  vec2 c = gl_PointCoord - 0.5;
+  float d = length(c);
+  if (d > 0.5) discard;
+  float a = pow(smoothstep(0.5, 0.0, d), 1.6);
+  gl_FragColor = vec4(mix(uAccent, uCore, 0.6) * 1.2, a * vAlpha * 0.55);
 }
 `;
 
@@ -274,7 +328,7 @@ varying float vAlpha;
 void main() {
   vec3 col = mix(uColorA, uColorB, smoothstep(0.0, 0.85, vProgress));
   col = mix(col, uCore, vTip * 0.9);
-  float a = vAlpha * (0.32 + 0.6 * vTip);
+  float a = vAlpha * (0.22 + 0.55 * vTip);
   if (a < 0.004) discard;
   gl_FragColor = vec4(col, a);
 }
@@ -303,7 +357,7 @@ void main() {
 
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
-  gl_PointSize = min(26.0, aSize * uPointScale * (1.0 / max(0.8, -mv.z)) * (0.6 + uPresence * 0.5));
+  gl_PointSize = min(20.0, aSize * uPointScale * (1.0 / max(0.8, -mv.z)) * (0.6 + uPresence * 0.5));
 
   vColor = mix(uColorA, uColorB, aSeed);
   vAlpha = (0.12 + uPresence * 0.22) * (0.5 + 0.5 * sin(aSeed * 44.0 + t * 0.5));

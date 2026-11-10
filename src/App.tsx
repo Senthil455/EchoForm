@@ -634,6 +634,8 @@ export default function App() {
       className={`app${prefs.reducedMotion ? ' reduced-motion' : ''}`}
       data-phase={phase}
       data-mode={mode}
+      data-seed={worldSeed}
+      data-palette={paletteIndex}
     >
       {showWorld && (
         <WorldCanvas

@@ -1,8 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { Palette } from '../palettes';
-import { organismFragment, organismVertex } from '../shaders';
+import { organismFragment, organismTipFragment, organismTipVertex, organismVertex } from '../shaders';
 import { worldSignals } from '../types';
 import { generateOrganism } from '../organism';
 
@@ -12,6 +12,8 @@ interface Props {
 }
 
 export function PresenceOrganism({ palette, seed }: Props) {
+  const lines = useRef<THREE.LineSegments>(null);
+  const lineMaterial = useRef<THREE.ShaderMaterial>(null);
   const geometry = useMemo(() => {
     const data = generateOrganism(seed);
     const geo = new THREE.BufferGeometry();
@@ -34,30 +36,36 @@ export function PresenceOrganism({ palette, seed }: Props) {
       uColorA: { value: new THREE.Color(palette.field) },
       uColorB: { value: new THREE.Color(palette.accent) },
       uCore: { value: new THREE.Color(palette.coreHot) },
+      uAccent: { value: new THREE.Color(palette.field) },
     }),
     [palette],
   );
 
   useFrame(() => {
     const s = worldSignals;
-    uniforms.uTime.value = s.t;
-    uniforms.uBreath.value = s.breath;
-    uniforms.uPresence.value = s.presence;
-    uniforms.uGrowth.value = s.growth;
-    uniforms.uReduced.value = s.reduced;
+    const u = lineMaterial.current?.uniforms;
+    if (!u) return;
+    u.uTime.value = s.t;
+    u.uBreath.value = s.breath;
+    u.uPresence.value = s.presence;
+    u.uGrowth.value = s.growth;
+    u.uReduced.value = s.reduced;
   });
 
   return (
-    <lineSegments geometry={geometry} frustumCulled={false}>
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={organismVertex}
-        fragmentShader={organismFragment}
-        transparent
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        toneMapped={false}
-      />
-    </lineSegments>
+    <group>
+      <lineSegments ref={lines} geometry={geometry} frustumCulled={false}>
+        <shaderMaterial
+          ref={lineMaterial}
+          uniforms={uniforms}
+          vertexShader={organismVertex}
+          fragmentShader={organismFragment}
+          transparent
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          toneMapped={false}
+        />
+      </lineSegments>
+    </group>
   );
 }

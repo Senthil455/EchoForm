@@ -33,5 +33,5 @@ export const worldSignals: WorldSignals = {
 export type WorldQuality = 'low' | 'medium' | 'high';
 
 export function particleCount(quality: WorldQuality): number {
-  return quality === 'high' ? 7200 : quality === 'medium' ? 4400 : 2400;
+  return quality === 'high' ? 5200 : quality === 'medium' ? 3300 : 1900;
 }

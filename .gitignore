@@ -2,9 +2,11 @@ node_modules/
 dist/
 release/
 out/
+.qa/
 *.log
 .env
 .env.*
+!.env.example
 .DS_Store
 Thumbs.db
 *.local

@@ -60,17 +60,17 @@ function WorldState({ phase, reducedMotion, replayDuration }: Omit<Props, 'palet
     const phase01 = running && phase !== 'echo' ? frame.pulse.beatPhase : (t * 0.94) % 1;
     const pulse = Math.exp(-phase01 * 4.3) * (running && phase !== 'echo' ? 1 : 0.42);
 
-    let growthTarget = 0.26;
-    if (phase === 'attuning') growthTarget = 0.34;
+    let growthTarget = 0.34;
+    if (phase === 'attuning') growthTarget = 0.4;
     if (phase === 'alive') {
-      growthTarget = 0.4 + 0.6 * (1 - Math.exp(-frame.t / 120));
+      growthTarget = 0.45 + 0.55 * (1 - Math.exp(-frame.t / 100));
     }
     if (phase === 'echo') {
-      growthTarget = 0.4 + 0.6 * (1 - Math.exp(-(frame.t || 150) / 120));
+      growthTarget = 0.45 + 0.55 * (1 - Math.exp(-(frame.t || 150) / 100));
     }
     if (phase === 'replay') {
       const elapsed = replayDuration ?? 0;
-      growthTarget = 0.4 + 0.6 * (1 - Math.exp(-elapsed / 120));
+      growthTarget = 0.45 + 0.55 * (1 - Math.exp(-elapsed / 100));
     }
 
     const s = worldSignals;

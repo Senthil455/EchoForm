@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { Palette } from '../palettes';
@@ -10,6 +10,8 @@ interface Props {
 }
 
 export function GroundPool({ palette }: Props) {
+  const material = useRef<THREE.ShaderMaterial>(null);
+
   const uniforms = useMemo(
     () => ({
       uColor: { value: new THREE.Color(palette.ground) },
@@ -23,15 +25,18 @@ export function GroundPool({ palette }: Props) {
 
   useFrame(() => {
     const s = worldSignals;
-    uniforms.uTime.value = s.t;
-    uniforms.uPulse.value = s.pulse;
-    uniforms.uPresence.value = s.presence;
+    const u = material.current?.uniforms;
+    if (!u) return;
+    u.uTime.value = s.t;
+    u.uPulse.value = s.pulse;
+    u.uPresence.value = s.presence;
   });
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.42, 0]}>
       <planeGeometry args={[48, 48, 1, 1]} />
       <shaderMaterial
+        ref={material}
         uniforms={uniforms}
         vertexShader={groundVertex}
         fragmentShader={groundFragment}

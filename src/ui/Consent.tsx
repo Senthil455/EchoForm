@@ -70,7 +70,7 @@ export function Consent({
   const [editing, setEditing] = useState(false);
   const [key, setKey] = useState('');
   const [showKey, setShowKey] = useState(false);
-  const [remember, setRemember] = useState(Boolean(bootstrap?.safeStorage));
+  const [remember, setRemember] = useState(false);
   const [busy, setBusy] = useState(false);
   const [keyHint, setKeyHint] = useState('');
 

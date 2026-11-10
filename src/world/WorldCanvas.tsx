@@ -63,12 +63,11 @@ export function WorldCanvas({ phase, paletteIndex, seed, reducedMotion, replayDu
     typeof window !== 'undefined' && window.innerWidth < 980 ? 'medium' : 'high',
   );
   const palette = paletteFor(paletteIndex);
-  const bloomEnabled = !reducedMotion && quality !== 'low';
 
   if (!supported) return <StaticFallback paletteIndex={paletteIndex} />;
 
   return (
-    <div className="world-canvas" aria-hidden="true">
+    <div className="world-canvas" data-quality={quality} aria-hidden="true">
       <SceneErrorBoundary fallback={<StaticFallback paletteIndex={paletteIndex} />}>
         <Canvas
           dpr={[1, 1.75]}
@@ -94,17 +93,15 @@ export function WorldCanvas({ phase, paletteIndex, seed, reducedMotion, replayDu
               reducedMotion={reducedMotion}
               replayDuration={replayDuration}
             />
-            {bloomEnabled && (
-              <EffectComposer multisampling={0}>
-                <Bloom
-                  mipmapBlur
-                  intensity={1.18}
-                  luminanceThreshold={0.1}
-                  luminanceSmoothing={0.32}
-                  radius={0.72}
-                />
-              </EffectComposer>
-            )}
+            <EffectComposer multisampling={0}>
+              <Bloom
+                mipmapBlur
+                intensity={quality === 'low' ? 1.0 : 1.18}
+                luminanceThreshold={quality === 'low' ? 0.08 : 0.1}
+                luminanceSmoothing={0.32}
+                radius={quality === 'low' ? 0.62 : 0.72}
+              />
+            </EffectComposer>
             <AdaptiveDpr />
             <PerformanceMonitor
               flipflops={2}

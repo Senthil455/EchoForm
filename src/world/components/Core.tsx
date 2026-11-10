@@ -15,6 +15,8 @@ export function Core({ palette }: Props) {
   const group = useRef<THREE.Group>(null);
   const orbitA = useRef<THREE.Mesh>(null);
   const orbitB = useRef<THREE.Mesh>(null);
+  const coreMaterial = useRef<THREE.ShaderMaterial>(null);
+  const haloMaterial = useRef<THREE.ShaderMaterial>(null);
 
   const coreUniforms = useMemo(
     () => ({
@@ -41,11 +43,17 @@ export function Core({ palette }: Props) {
   useFrame((state, delta) => {
     const s = worldSignals;
     const dt = Math.min(delta, 0.1);
-    coreUniforms.uTime.value = s.t;
-    coreUniforms.uPulse.value = s.pulse;
-    coreUniforms.uPresence.value = s.presence;
-    haloUniforms.uPulse.value = s.pulse;
-    haloUniforms.uPresence.value = s.presence;
+    const cu = coreMaterial.current?.uniforms;
+    const hu = haloMaterial.current?.uniforms;
+    if (cu) {
+      cu.uTime.value = s.t;
+      cu.uPulse.value = s.pulse;
+      cu.uPresence.value = s.presence;
+    }
+    if (hu) {
+      hu.uPulse.value = s.pulse;
+      hu.uPresence.value = s.presence;
+    }
 
     if (group.current) {
       const target = 1 + s.pulse * 0.075 + s.breath * 0.012;
@@ -72,8 +80,9 @@ export function Core({ palette }: Props) {
   return (
     <group ref={group} position={[0, 0.22, 0]}>
       <mesh>
-        <icosahedronGeometry args={[0.68, 7]} />
+        <icosahedronGeometry args={[0.6, 7]} />
         <shaderMaterial
+          ref={coreMaterial}
           uniforms={coreUniforms}
           vertexShader={coreVertex}
           fragmentShader={coreFragment}
@@ -86,8 +95,9 @@ export function Core({ palette }: Props) {
 
       <Billboard>
         <mesh>
-          <planeGeometry args={[8.8, 8.8]} />
+          <planeGeometry args={[8.4, 8.4]} />
           <shaderMaterial
+            ref={haloMaterial}
             uniforms={haloUniforms}
             vertexShader={haloVertex}
             fragmentShader={haloFragment}

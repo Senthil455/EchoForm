@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { mulberry32 } from '../../lib/math';
@@ -15,6 +15,8 @@ const RIBBON_COUNT = 8;
 const SEGMENTS = 80;
 
 export function Ribbons({ palette, seed }: Props) {
+  const material = useRef<THREE.ShaderMaterial>(null);
+
   const geometry = useMemo(() => {
     const rand = mulberry32(seed ^ 0x1b873593);
     const vertexCount = RIBBON_COUNT * (SEGMENTS + 1) * 2;
@@ -80,17 +82,20 @@ export function Ribbons({ palette, seed }: Props) {
 
   useFrame(() => {
     const s = worldSignals;
-    uniforms.uTime.value = s.t;
-    uniforms.uBreath.value = s.breath;
-    uniforms.uBreathAmp.value = s.breathAmp;
-    uniforms.uPulse.value = s.pulse;
-    uniforms.uPresence.value = s.presence;
-    uniforms.uReduced.value = s.reduced;
+    const u = material.current?.uniforms;
+    if (!u) return;
+    u.uTime.value = s.t;
+    u.uBreath.value = s.breath;
+    u.uBreathAmp.value = s.breathAmp;
+    u.uPulse.value = s.pulse;
+    u.uPresence.value = s.presence;
+    u.uReduced.value = s.reduced;
   });
 
   return (
     <mesh geometry={geometry} frustumCulled={false}>
       <shaderMaterial
+        ref={material}
         uniforms={uniforms}
         vertexShader={ribbonVertex}
         fragmentShader={ribbonFragment}

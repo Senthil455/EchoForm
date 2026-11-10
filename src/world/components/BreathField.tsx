@@ -14,6 +14,7 @@ interface Props {
 
 export function BreathField({ palette, quality, seed }: Props) {
   const count = particleCount(quality);
+  const material = useRef<THREE.ShaderMaterial>(null);
 
   const geometry = useMemo(() => {
     const rand = mulberry32(seed ^ 0x9e3779b9);
@@ -56,7 +57,7 @@ export function BreathField({ palette, quality, seed }: Props) {
       uPulse: { value: 0 },
       uPresence: { value: 0 },
       uReduced: { value: 0 },
-      uPointScale: { value: quality === 'high' ? 26 : quality === 'medium' ? 22 : 18 },
+      uPointScale: { value: quality === 'high' ? 20 : quality === 'medium' ? 17 : 14 },
       uColorA: { value: new THREE.Color(palette.field) },
       uColorB: { value: new THREE.Color(palette.accent) },
       uColorC: { value: new THREE.Color(palette.core) },
@@ -66,17 +67,20 @@ export function BreathField({ palette, quality, seed }: Props) {
 
   useFrame(() => {
     const s = worldSignals;
-    uniforms.uTime.value = s.t;
-    uniforms.uBreath.value = s.breath;
-    uniforms.uBreathAmp.value = s.breathAmp;
-    uniforms.uPulse.value = s.pulse;
-    uniforms.uPresence.value = s.presence;
-    uniforms.uReduced.value = s.reduced;
+    const u = material.current?.uniforms;
+    if (!u) return;
+    u.uTime.value = s.t;
+    u.uBreath.value = s.breath;
+    u.uBreathAmp.value = s.breathAmp;
+    u.uPulse.value = s.pulse;
+    u.uPresence.value = s.presence;
+    u.uReduced.value = s.reduced;
   });
 
   return (
     <points geometry={geometry} frustumCulled={false}>
       <shaderMaterial
+        ref={material}
         uniforms={uniforms}
         vertexShader={breathFieldVertex}
         fragmentShader={breathFieldFragment}

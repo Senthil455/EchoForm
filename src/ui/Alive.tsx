@@ -26,14 +26,14 @@ function BreathGuide({ waveform, label }: { waveform: number; label: string }) {
   const wave = clamp(waveform, -1, 1);
   return (
     <div className="breath-guide" aria-hidden="true">
-      <div className="breath-caption">{label}</div>
       <svg viewBox="0 0 260 58" className="breath-svg">
         <path className="breath-arc" d="M12 44 Q130 -6 248 44" />
         <path className="breath-arc breath-arc-faint" d="M12 44 Q130 76 248 44" />
         <line className="breath-line" x1="12" y1="44" x2="248" y2="44" />
-        <circle className="breath-dot-halo" cx={130 + wave * 104} cy="44" r="9" />
-        <circle className="breath-dot" cx={130 + wave * 104} cy="44" r="2.6" />
+        <circle className="breath-dot-halo" cx={130 + wave * 104} cy="44" r="10" />
+        <circle className="breath-dot" cx={130 + wave * 104} cy="44" r="2.8" />
       </svg>
+      <div className="breath-caption">{label}</div>
     </div>
   );
 }
@@ -65,7 +65,7 @@ export function Alive({
   }, [frame.breath.waveform]);
 
   const time = replay && replayOf ? replayOf.durationSec : frame.t;
-  const timeLabel = replay ? 'ORIGINAL LENGTH' : 'FIELD TIME';
+  const timeLabel = replay ? 'LENGTH' : 'SESSION';
   const nudge = replay ? 'Let the echo breathe.' : mode === 'synthetic' ? 'Breathe with the generated signal.' : 'Breathe naturally.';
 
   return (

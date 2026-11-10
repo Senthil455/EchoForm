@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { mulberry32 } from '../../lib/math';
@@ -13,7 +13,8 @@ interface Props {
 }
 
 export function SporeDust({ palette, seed, quality }: Props) {
-  const count = quality === 'high' ? 260 : quality === 'medium' ? 180 : 100;
+  const count = quality === 'high' ? 220 : quality === 'medium' ? 150 : 80;
+  const material = useRef<THREE.ShaderMaterial>(null);
 
   const geometry = useMemo(() => {
     const rand = mulberry32(seed ^ 0xcc9e2d51);
@@ -46,7 +47,7 @@ export function SporeDust({ palette, seed, quality }: Props) {
       uTime: { value: 0 },
       uPresence: { value: 0 },
       uReduced: { value: 0 },
-      uPointScale: { value: quality === 'high' ? 30 : quality === 'medium' ? 26 : 22 },
+      uPointScale: { value: quality === 'high' ? 26 : quality === 'medium' ? 23 : 20 },
       uColorA: { value: new THREE.Color(palette.field) },
       uColorB: { value: new THREE.Color(palette.core) },
     }),
@@ -55,14 +56,17 @@ export function SporeDust({ palette, seed, quality }: Props) {
 
   useFrame(() => {
     const s = worldSignals;
-    uniforms.uTime.value = s.t;
-    uniforms.uPresence.value = s.presence;
-    uniforms.uReduced.value = s.reduced;
+    const u = material.current?.uniforms;
+    if (!u) return;
+    u.uTime.value = s.t;
+    u.uPresence.value = s.presence;
+    u.uReduced.value = s.reduced;
   });
 
   return (
     <points geometry={geometry} frustumCulled={false}>
       <shaderMaterial
+        ref={material}
         uniforms={uniforms}
         vertexShader={dustVertex}
         fragmentShader={dustFragment}
