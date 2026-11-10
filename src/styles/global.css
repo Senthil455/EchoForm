@@ -1591,6 +1591,22 @@ button:disabled {
   opacity: 0.95;
   pointer-events: none;
   transform: translateX(-50%);
+  isolation: isolate;
+}
+
+.breath-guide::before {
+  content: '';
+  position: absolute;
+  inset: -14px -40px -8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 55%,
+    rgba(2, 7, 6, 0.58) 0%,
+    rgba(2, 7, 6, 0.32) 42%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
 }
 
 .breath-caption {
@@ -2131,8 +2147,8 @@ button:disabled {
   letter-spacing: 0.18em;
   line-height: 1;
   text-transform: uppercase;
-  opacity: 0;
-  transform: translateY(4px);
+  opacity: 0.68;
+  transform: translateY(0);
   transition:
     opacity 0.3s var(--ease),
     transform 0.3s var(--ease);

@@ -165,15 +165,45 @@ async function main() {
           frame: window.__echoformFrame ?? null,
           organism: window.__echoformOrganism ?? null,
           organismDebug: window.__echoformOrganismDebug ?? null,
+          layout: (() => {
+            const node = document.querySelector('.consent') || document.querySelector('.screen');
+            if (!node) return null;
+            const rect = node.getBoundingClientRect();
+            const footnote = document.querySelector('.consent-footnote')?.getBoundingClientRect();
+            const actions = document.querySelector('.consent-actions')?.getBoundingClientRect();
+            return {
+              selector: node.className,
+              scrollHeight: node.scrollHeight,
+              clientHeight: node.clientHeight,
+              rect: { top: rect.top, bottom: rect.bottom, height: rect.height },
+              footnote: footnote ? { top: footnote.top, bottom: footnote.bottom } : null,
+              actions: actions ? { top: actions.top, bottom: actions.bottom } : null,
+            };
+          })(),
           body: document.body.innerText.slice(0, 220)
         }))()`,
         returnByValue: true,
       });
+      let extra = null;
+      if (process.env.QA_EVAL) {
+        const result = await cdp.send('Runtime.evaluate', {
+          expression: process.env.QA_EVAL,
+          returnByValue: true,
+          awaitPromise: true,
+        });
+        extra = result.result.value;
+      }
       const shot = await cdp.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
       const file = path.join(OUT, `cdp-${scene.name}.png`);
       fs.writeFileSync(file, Buffer.from(shot.data, 'base64'));
-      report.push({ scene: scene.name, url, file, state: state.result.value });
+      report.push({ scene: scene.name, url, file, state: state.result.value, extra });
       console.log(`[qa]   hud=${state.result.value.hudTime} phase=${state.result.value.phase}`);
+      if (state.result.value.layout?.scrollHeight != null) {
+        console.log(
+          `[qa]   layout=${state.result.value.layout.scrollHeight}/${state.result.value.layout.clientHeight}`,
+        );
+      }
+      if (extra != null) console.log(`[qa]   extra=${JSON.stringify(extra)}`);
       if (state.result.value.world) {
         console.log(`[qa]   world=${JSON.stringify(state.result.value.world)}`);
       }
