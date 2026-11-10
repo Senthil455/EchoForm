@@ -3,7 +3,7 @@
 > **Challenge:** Presage SmartSpectra SDK Challenge
 > **Tag:** `#presagechallenge`
 > **Prize categories:** Best Overall Human-Sensing Experience · Most Creative or Delightful Use · Best Thoughtful Real-World Use
-> **Status:** Draft — replace placeholders before publishing.
+> **Status:** Ready — video link placeholder remains; repo URL filled.
 
 ---
 
@@ -38,7 +38,7 @@ No video is recorded. No raw signals are saved. No accounts. No backend.
 
 **Video:** [ADD PUBLIC DEMO VIDEO LINK]
 
-**Repository:** [ADD PUBLIC GITHUB URL]
+**Repository:** https://github.com/Senthil455/EchoForm
 
 **Setup:** see the README. In short:
 
@@ -186,7 +186,7 @@ Electron · React · TypeScript · Three.js · React Three Fiber · WebGL/GLSL �
 ## Try it
 
 ```bash
-git clone [ADD REPO URL]
+git clone https://github.com/Senthil455/EchoForm.git
 cd EchoForm
 npm install
 npm run dev
