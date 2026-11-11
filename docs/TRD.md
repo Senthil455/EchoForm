@@ -146,8 +146,7 @@ import {
   SmartSpectraSDK,
   ProcessingStatus,
   ValidationCode,
-  breathingMetrics,
-  cardioMetrics,
+  MetricType,
   faceMetrics,
 } from '@smartspectra/node-sdk/renderer';
 
@@ -160,20 +159,24 @@ import { decodeMetrics } from '@smartspectra/node-sdk/messages';
 const sdk = new SmartSpectraSDK({
   apiKey,
   requestedMetrics: [
-    ...breathingMetrics,
-    ...cardioMetrics,
+    MetricType.CHEST_BREATHING,
+    MetricType.ABDOMEN_BREATHING,
+    MetricType.BREATHING_RATE,
+    MetricType.PULSE_RATE,
     ...(expressionWeather ? faceMetrics : []),
   ],
   enableAccumulatedOutput: false,
   enableTelemetry: telemetryOptIn, // false by default
-  sendTimeoutMs: 30_000,
+  sendTimeoutMs: 120_000,
 });
 ```
 
+Before `start()`, ECHOFORM acquires a video-only `MediaStream` at up to 640×480 / 30 fps and passes it to `sdk.useMediaStream()`. This keeps per-frame renderer-to-main copies within budget while the Three.js world is active. The first pulse-model initialization can take longer than the SDK's default 30-second IPC timeout, so the app allows up to 120 seconds for startup.
+
 Metrics requested:
 
-- **Breathing bundle:** chest, abdomen, rate, amplitude, apnea, respiratory line length, baseline, inhale/exhale ratio.
-- **Cardio bundle:** pulse rate, arterial pressure trace, HRV.
+- **Requested core metrics:** chest breathing, abdomen breathing, breathing rate, pulse rate.
+- **Not requested:** arterial pressure trace and HRV.
 - **Face bundle (optional):** landmarks, blinking, talking, expressions. Used only as an abstract visual input; never labeled as emotion.
 
 The SDK's key may not be provisioned for cardio. The app must degrade gracefully: breathing-only worlds are valid.
@@ -186,7 +189,7 @@ construct → subscribe → start() → (streamAvailable | metrics | validation 
 
 Rules:
 
-- Construct only after the user chooses camera mode and provides a key.
+- Construct only after the user chooses camera mode and provides a key. Request `CHEST_BREATHING`, `ABDOMEN_BREATHING`, `BREATHING_RATE`, and `PULSE_RATE` explicitly; add face metrics only when the user opts into expression weather. The SDK v3.4.0 convenience `breathingMetrics` bundle includes currently unavailable codes, so do not spread that bundle in this app. Do not request arterial-pressure trace or HRV for the core world.
 - Subscribe to all events before `start()`.
 - `start()` is awaited and may reject (auth, camera, network).
 - `stop()` is called on session end, window close, and fatal errors.

@@ -60,14 +60,18 @@ The app uses the official Node/Electron SDK:
 ```ts
 import {
   SmartSpectraSDK,
-  breathingMetrics,
-  cardioMetrics,
+  MetricType,
 } from '@smartspectra/node-sdk/renderer';
 import { decodeMetrics } from '@smartspectra/node-sdk/messages';
 
 const sdk = new SmartSpectraSDK({
   apiKey,
-  requestedMetrics: [...breathingMetrics, ...cardioMetrics],
+  requestedMetrics: [
+    MetricType.CHEST_BREATHING,
+    MetricType.ABDOMEN_BREATHING,
+    MetricType.BREATHING_RATE,
+    MetricType.PULSE_RATE,
+  ],
   enableTelemetry: false, // ECHOFORM default
 });
 

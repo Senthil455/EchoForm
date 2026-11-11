@@ -202,14 +202,13 @@ sequenceDiagram
 
     U->>UI: Use my camera (+ key)
     UI->>UI: validate consent + key
+    UI->>UI: getUserMedia(640×480, video only)
+    UI->>UI: preview the host-owned stream, show attuning
     UI->>SDK: new SmartSpectraSDK({ key, metrics, telemetry:false })
-    UI->>SDK: subscribe events
-    UI->>SDK: start()
+    UI->>SDK: useMediaStream(stream), subscribe events
+    UI->>SDK: start() (up to 120s for first model load)
     SDK->>MP: start (MessagePort)
     MP->>NAT: start pipeline
-    NAT-->>SDK: streamAvailable(MediaStream)
-    SDK-->>UI: streamAvailable
-    UI->>UI: attach preview, show attuning
     NAT-->>SDK: validationStatus / metrics
     SDK-->>E: decodeMetrics(buf)
     E->>E: smooth, range-gate, phase, presence

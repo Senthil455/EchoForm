@@ -6,6 +6,7 @@ type Listener = (...args: any[]) => void;
 interface SdkLike {
   start(): Promise<void>;
   stop(): Promise<void>;
+  useMediaStream(stream: MediaStream): unknown;
   destroy(): void;
   on(event: string, callback: Listener): unknown;
 }
@@ -172,6 +173,7 @@ export class LiveSession {
     const sdk = this.sdk;
     this.sdk = null;
     if (this.stream) {
+      for (const track of this.stream.getTracks()) track.stop();
       this.stream = null;
       this.options.onStream(null);
     }
@@ -198,8 +200,7 @@ export class LiveSession {
     const {
       SmartSpectraSDK,
       ProcessingStatus,
-      breathingMetrics,
-      cardioMetrics,
+      MetricType,
       faceMetrics,
     } = await import('@smartspectra/node-sdk/renderer');
     if (this.disposed) return;
@@ -207,8 +208,10 @@ export class LiveSession {
     if (this.disposed) return;
 
     const requestedMetrics = [
-      ...breathingMetrics,
-      ...cardioMetrics,
+      MetricType.CHEST_BREATHING,
+      MetricType.ABDOMEN_BREATHING,
+      MetricType.BREATHING_RATE,
+      MetricType.PULSE_RATE,
       ...(this.options.expressions ? faceMetrics : []),
     ];
 
@@ -217,7 +220,7 @@ export class LiveSession {
       requestedMetrics,
       enableAccumulatedOutput: false,
       enableTelemetry: this.options.telemetry,
-      sendTimeoutMs: 30_000,
+      sendTimeoutMs: 120_000,
     });
     this.sdk = sdk as unknown as SdkLike;
 
@@ -272,6 +275,23 @@ export class LiveSession {
     });
 
     try {
+      // Keep renderer-to-main frame copies modest while the Three.js world renders.
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { ideal: 640, max: 640 },
+          height: { ideal: 480, max: 480 },
+          frameRate: { ideal: 30, max: 30 },
+          facingMode: 'user',
+        },
+      });
+      if (this.disposed) {
+        for (const track of stream.getTracks()) track.stop();
+        return;
+      }
+      this.stream = stream;
+      this.options.onStream(stream);
+      sdk.useMediaStream(stream);
       await sdk.start();
       // The SDK may have emitted a terminal error while start() was awaiting
       // an ack. In that case fail() already tore it down; do not resurrect
@@ -294,6 +314,7 @@ export class LiveSession {
     const sdk = this.sdk;
     this.sdk = null;
     if (this.stream) {
+      for (const track of this.stream.getTracks()) track.stop();
       this.stream = null;
       this.options.onStream(null);
     }
