@@ -63,7 +63,7 @@ export function Attuning({
   const canSkip = !error && !present && frame.t > 7;
 
   return (
-    <section className="screen attuning" aria-labelledby="attuning-title">
+    <section className={`screen attuning${error ? ' has-error' : ''}`} aria-labelledby="attuning-title">
       <header className="topbar">
         <button type="button" className="text-button back-button" onClick={onBack}>
           <ChevronLeft size={15} strokeWidth={1.4} aria-hidden="true" />

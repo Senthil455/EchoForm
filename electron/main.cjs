@@ -264,8 +264,12 @@ function installPermissionPolicy() {
     callback(permission === 'media' && cameraOnly && isTrustedPage(url));
   });
 
-  session.defaultSession.setPermissionCheckHandler((_webContents, permission, requestingOrigin) => {
-    return permission === 'media' && isTrustedPage(requestingOrigin);
+  session.defaultSession.setPermissionCheckHandler((_webContents, permission, requestingOrigin, details) => {
+    return (
+      permission === 'media' &&
+      details?.mediaType === 'video' &&
+      isTrustedPage(details.securityOrigin || requestingOrigin)
+    );
   });
 }
 

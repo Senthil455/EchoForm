@@ -1,10 +1,12 @@
 # ECHOFORM
 
-A world that exists only while you are present. Live breath and pulse, measured by the Presage SmartSpectra SDK from your camera, become a generative 3D ecosystem on your desktop.
+**A world that exists only while you are present.** ECHOFORM turns live breathing and pulse measurements from the Presage SmartSpectra SDK into a generative 3D ecosystem. When you leave, the world contracts into an Echo Print.
+
+![ECHOFORM synthetic world](docs/media/alive.jpg)
 
 ## What it does
 
-- **Live sensing:** Presage SmartSpectra measures breathing and pulse from your camera on-device. No video is recorded.
+- **Live sensing:** Presage SmartSpectra measures breathing and pulse from your camera on-device. No video is recorded. Live mode requires a Presage API key.
 - **A living world:** breath drives a particle field and flowing ribbons; pulse drives a shader core and expanding echo rings; a seeded organism grows through the session.
 - **Adaptive sound:** a Web Audio soundscape follows breath and pulse (off by default).
 - **Echo Print:** when you leave, the world contracts into a locally generated 1600×2000 PNG you can download.
@@ -20,6 +22,16 @@ npm run dev
 ```
 
 This starts the Vite dev server and opens the Electron app.
+
+### Build and package
+
+```bash
+npm run typecheck
+npm run build
+npm run pack:win
+```
+
+The Windows installer is written to `dist/`. The packaged Windows app has been smoke-tested in synthetic mode. macOS and Linux build scripts are included but have not been validated on those platforms.
 
 ### Live mode
 
@@ -43,9 +55,29 @@ You can store the key encrypted by your OS ("Remember on this device") or keep i
 
 Platform tested: Windows 11 x64. The SmartSpectra SDK also supports macOS arm64 and Linux x64.
 
+## Demo and screenshots
+
+The screenshots below use generated signals so the experience can be reviewed without a camera or API key.
+
+| Living world | The Echo Print |
+| --- | --- |
+| ![A synthetic ECHOFORM world](docs/media/alive.jpg) | ![Echo Print ending](docs/media/echo.jpg) |
+
+Suggested 2–3 minute demo: introduce the consent screen and synthetic option; start a synthetic session and show breath/pulse responding in the world; end the session to reveal the Echo Print; save the echo, replay it without the camera, then show the archive and delete controls. If recording live mode, use your own valid Presage key and show camera consent before starting.
+
+## Project docs
+
+- [Product requirements (PRD)](docs/PRD.md)
+- [Business requirements (BRD)](docs/BRD.md)
+- [Technical design (TRD)](docs/TRD.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Feature map](docs/FEATURES.md)
+- [Camera consent and privacy](docs/PRIVACY.md)
+- [Challenge submission draft](docs/SUBMISSION.md)
+
 ## Consent & privacy
 
-- The camera is only used after you explicitly opt in, with a live preview visible so you know what it sees.
+- The camera is only requested after you choose **Use my camera** and confirm the operating-system prompt.
 - ECHOFORM never records, stores, or uploads video. No raw signals are saved.
 - No accounts, analytics, ads, crash reporter, or backend. The SDK contacts Presage only to validate your API key; optional aggregate SDK telemetry is off by default.
 - Saved echoes hold only aggregate numbers, a date, and a random seed — no health data, no face data.

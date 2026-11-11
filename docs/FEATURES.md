@@ -10,14 +10,14 @@
 
 | # | Feature | User value | Challenge value | Status | Code |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Threshold / title scene | Sets tone before asking for anything | First impression in demo | Built | `src/components/Threshold.tsx` |
-| 2 | Consent scene | Explains camera + data before access | Required disclosure, trust | Built | `src/components/Consent.tsx` |
-| 3 | API key setup | Lets judges/users run live mode without editing code | Reproducibility | Built | `Consent.tsx`, `electron/main.cjs` |
-| 4 | Attunement / calibration | Guides the user to a usable signal | Reduces failed demos | Built | `src/components/Attuning.tsx` |
+| 1 | Threshold / title scene | Sets tone before asking for anything | First impression in demo | Built | `src/ui/Threshold.tsx` |
+| 2 | Consent scene | Explains camera + data before access | Required disclosure, trust | Built | `src/ui/Consent.tsx` |
+| 3 | API key setup | Lets judges/users run live mode without editing code | Reproducibility | Built | `src/ui/Consent.tsx`, `electron/main.cjs` |
+| 4 | Attunement / calibration | Guides the user to a usable signal | Reduces failed demos | Built | `src/ui/Attuning.tsx` |
 | 5 | Living world | The core experience | Proof of live SDK use | Built | `src/world/*` |
-| 6 | Session end / Echo Print | Gives the session a memory | Memorable demo ending | Built | `src/artwork/generateEchoPrint.ts` |
-| 7 | Echo archive | Keeps sessions without keeping raw data | Thoughtful real-world use | Built | `src/components/Archive.tsx` |
-| 8 | Replay | Revisit an echo without camera | Data minimization + delight | Built | `src/signals/synthetic.ts`, `App.tsx` |
+| 6 | Session end / Echo Print | Gives the session a memory | Memorable demo ending | Built | `src/artwork/EchoPrint.ts` |
+| 7 | Echo archive | Keeps sessions without keeping raw data | Thoughtful real-world use | Built | `src/ui/Archive.tsx` |
+| 8 | Replay | Revisit an echo without camera | Data minimization + delight | Built | `src/signals/engine.ts`, `App.tsx` |
 
 ---
 
@@ -25,7 +25,7 @@
 
 | # | Feature | Live signal | World response | Status |
 | --- | --- | --- | --- | --- |
-| 2.1 | Breath wind | Breathing waveform / rate | 32k–48k particle field contracts on inhale and releases on exhale; ribbons wave | Built |
+| 2.1 | Breath wind | Breathing waveform / rate | 1.9k–5.2k additive particles contract on inhale and release on exhale; ribbons wave | Built |
 | 2.2 | Pulse core | Pulse rate + confidence | Central membrane blooms per beat; three echo rings expand; soft heartbeat | Built |
 | 2.3 | Presence fade | Stable signal freshness | World dims when the signal is lost; recovers gently | Built |
 | 2.4 | Session growth | Time + presence | Procedural organism branches extend as the session continues | Built |
@@ -41,18 +41,18 @@
 
 | # | Feature | Description | Status |
 | --- | --- | --- | --- |
-| 3.1 | Breath field | 48k additive particles, procedural shader, breath-driven radial + curl motion | Built |
-| 3.2 | Ribbons | 7 additive strips waving with breath | Built |
-| 3.3 | Pulse core | Fresnel-shaded ember/lumen membrane, beat scale + bloom | Built |
+| 3.1 | Breath field | 1,900 / 3,300 / 5,200 additive particles by quality tier, procedural shader, breath-driven radial + curl motion | Built |
+| 3.2 | Ribbons | 8 additive strips × 80 segments waving with breath | Built |
+| 3.3 | Pulse core | View-space Lambert/specular membrane with a broad halo, beat scale + bloom | Built |
 | 3.4 | Echo rings | Three expanding rings per beat, fade by ring age | Built |
 | 3.5 | Presence organism | Seeded branching line structure revealed over session | Built |
-| 3.6 | Spore dust | 600 slow parallax points | Built |
+| 3.6 | Spore dust | 80 / 150 / 220 slow parallax points by quality tier | Built |
 | 3.7 | Ground pool | Radial shimmer plane under the core | Built |
 | 3.8 | Sky | Inverted gradient sphere with subtle aurora | Built |
-| 3.9 | Bloom | GPU bloom for luminous highlights | Built |
+| 3.9 | Bloom | Always-on GPU bloom for luminous highlights | Built |
 | 3.10 | CSS grain/vignette | Cheap film texture over the canvas | Built |
-| 3.11 | Reduced motion | Disables drift/turbulence; preserves signal response | Built |
-| 3.12 | Adaptive quality | Steps particles/bloom down if frame time rises | Built |
+| 3.11 | Reduced motion | Disables drift/turbulence; preserves signal response and bloom | Built |
+| 3.12 | Adaptive quality | Steps particle counts and bloom intensity/radius when frame time rises | Built |
 | 3.13 | Palettes | Six seeded palettes | Built |
 | 3.14 | Awakening | 2.8s orchestrated reveal | Built |
 | 3.15 | Echo contraction | World contracts into the artwork | Built |
@@ -169,6 +169,6 @@ These are intentionally **not** required for submission, but show where the conc
 | Audio | Complete |
 | Echo Print + archive + replay | Complete |
 | Consent/privacy UI | Complete |
-| Packaging scripts | Complete (packaged smoke test pending) |
+| Windows packaging | Complete (packaged synthetic smoke test passed) |
 | Demo video | Pending |
 | DEV submission | Draft complete; publish pending |

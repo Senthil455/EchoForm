@@ -26,10 +26,9 @@
 The camera is not accessed until all of the following are true:
 
 1. You open ECHOFORM and read the consent screen.
-2. You check the consent acknowledgement.
+2. You provide a valid Presage API key.
 3. You select **Use my camera**.
-4. You provide a valid Presage API key.
-5. You confirm the OS/browser camera prompt.
+4. You confirm the operating-system camera prompt.
 
 If you select **Explore with synthetic signals**, the camera is never requested.
 
@@ -37,7 +36,7 @@ If you select **Explore with synthetic signals**, the camera is never requested.
 
 - A live camera preview is shown in the app so you know exactly what the camera sees.
 - The app shows a sensing status (`listening`, `settling`, `present`) and validation hints (for example, "add a little light").
-- The camera is released when you end the session, pause with release, close the window, or the app quits.
+- The camera is released when you end the session, close the window, or the app quits.
 - On platforms with a hardware camera indicator, the indicator turns off when the camera is released.
 
 ### 2.3 What the camera is used for
@@ -83,7 +82,7 @@ The frame buffers are transient. ECHOFORM does not write them to disk, and the a
 
 | Data | Where | Purpose | Retention |
 | --- | --- | --- | --- |
-| Preferences (`sound`, `reducedMotion`, `telemetry`, `expressionWeather`, `lastMode`, `hasOnboarded`) | Renderer `localStorage` | Remember your choices | Until you delete them |
+| Preferences (`sound`, `volume`, `reducedMotion`, `telemetry`, `expressionWeather`, `lastMode`, `hasOnboarded`) | Renderer `localStorage` | Remember your choices | Until you delete them |
 | App state (current phase) | Memory only | Run the app | Session only |
 | Raw camera frames | Memory only (transient) | SDK measurement | Discarded immediately after processing |
 | Raw metrics | Memory only | Drive the world and compute aggregates | Discarded when the session ends |
@@ -205,9 +204,9 @@ Uninstalling the app removes the application and, depending on the uninstaller/O
 
 ## 9. Security measures
 
-- Electron `contextIsolation: true`, `nodeIntegration: false`, `sandbox` where compatible.
+- Electron `contextIsolation: true`, `nodeIntegration: false`, `sandbox: false` because the composed SmartSpectra preload must load the SDK preload module; the renderer remains isolated and has no Node integration.
 - A narrow preload bridge; no Node access in the renderer.
-- Camera permission granted only to the bundled/local page and only for video-only requests.
+- Camera permission granted only to the bundled/local page and only for video-only checks and requests; microphone requests are denied.
 - Popups and navigation to remote content blocked.
 - CSP restricts scripts, styles, media, workers, and connections.
 - External links use an HTTPS allowlist.

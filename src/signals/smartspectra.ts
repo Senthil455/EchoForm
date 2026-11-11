@@ -160,6 +160,39 @@ export class LiveSession {
     return this.status;
   }
 
+  /**
+   * Stop the SDK immediately after a terminal error. The native pipeline can
+   * otherwise keep draining camera frames in an invalid state, which floods
+   * the terminal with warnings and keeps the camera light on. destroy() is
+   * synchronous and idempotent, so it is safe to call from an SDK callback.
+   */
+  private abort(): void {
+    if (this.disposed) return;
+    this.disposed = true;
+    const sdk = this.sdk;
+    this.sdk = null;
+    if (this.stream) {
+      this.stream = null;
+      this.options.onStream(null);
+    }
+    if (!sdk) return;
+    try {
+      sdk.destroy();
+    } catch {
+      /* the SDK is already gone */
+    }
+  }
+
+  private fail(error: AppError): void {
+    this.engine.setErrorHint(error.title);
+    this.options.onError(error);
+    this.engine.setRunning(false);
+    this.options.onRunningChange(false);
+    this.status = 'Idle';
+    this.options.onStatus('Idle');
+    this.abort();
+  }
+
   async start(): Promise<void> {
     if (this.disposed) return;
     const {
@@ -169,7 +202,9 @@ export class LiveSession {
       cardioMetrics,
       faceMetrics,
     } = await import('@smartspectra/node-sdk/renderer');
+    if (this.disposed) return;
     const { decodeMetrics } = await import('@smartspectra/node-sdk/messages');
+    if (this.disposed) return;
 
     const requestedMetrics = [
       ...breathingMetrics,
@@ -233,25 +268,22 @@ export class LiveSession {
 
     sdk.on('error', (code: number, message: string, retryable: boolean) => {
       if (this.disposed) return;
-      const error = errorFromCode(code, message, retryable);
-      this.engine.setErrorHint(error.title);
-      this.options.onError(error);
-      if (!retryable) {
-        this.engine.setRunning(false);
-        this.options.onRunningChange(false);
-      }
+      this.fail(errorFromCode(code, message, retryable));
     });
 
     try {
       await sdk.start();
-      this.engine.setRunning(true);
+      // The SDK may have emitted a terminal error while start() was awaiting
+      // an ack. In that case fail() already tore it down; do not resurrect
+      // the running state.
+      if (!this.disposed && this.sdk === (sdk as unknown as SdkLike)) {
+        this.engine.setRunning(true);
+      }
     } catch (err) {
+      if (this.disposed) return;
       const maybe = err as { code?: number; message?: string; retryable?: boolean };
       const error = errorFromCode(maybe.code, maybe.message, maybe.retryable);
-      this.engine.setErrorHint(error.title);
-      this.options.onError(error);
-      this.engine.setRunning(false);
-      this.options.onRunningChange(false);
+      this.fail(error);
       throw error;
     }
   }

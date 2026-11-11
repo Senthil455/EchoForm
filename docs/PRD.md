@@ -422,7 +422,7 @@ See [PRIVACY.md](./PRIVACY.md) for the full disclosure. Product requirements:
 | Reliability | Camera start failure produces a clear retry path; app never hangs on SDK stop |
 | Memory | Steady-state renderer < 500 MB; no unbounded metric arrays |
 | Bundle | Renderer JS < 3.5 MB gzipped excluding native SDK; fonts subset |
-| Security | `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`, strict IPC surface, camera grant only to bundled/local page |
+| Security | `contextIsolation: true`, `nodeIntegration: false`, `sandbox: false` for the composed SDK preload, strict IPC surface, video-only camera grant to bundled/local page |
 | Privacy | No telemetry, analytics, or remote fonts by default |
 | Accessibility | WCAG 2.1 AA for UI; reduced motion; keyboard operable |
 | Portability | Windows x64 primary; macOS arm64 and Linux x64 build paths documented |

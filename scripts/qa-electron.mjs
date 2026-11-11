@@ -3,7 +3,8 @@
 import fs from 'node:fs';
 
 const PORT = Number(process.env.QA_CDP_PORT || 9222);
-const PAGE_HINT = '127.0.0.1:5173';
+const PAGE_HINT = process.env.QA_PAGE_HINT || '127.0.0.1:5173';
+const PAGE_TITLE = process.env.QA_PAGE_TITLE || 'ECHOFORM';
 const PHASE_LABEL = process.argv[2] || 'inspect';
 
 class Cdp {
@@ -59,7 +60,11 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
   const targets = await (await fetch(`http://127.0.0.1:${PORT}/json/list`)).json();
-  const page = targets.find((target) => target.type === 'page' && target.url.includes(PAGE_HINT));
+  const page = targets.find(
+    (target) =>
+      target.type === 'page' &&
+      (target.url.includes(PAGE_HINT) || target.title === PAGE_TITLE),
+  );
   if (!page) throw new Error('ECHOFORM page not found. Is Electron running with remote debugging?');
 
   const cdp = new Cdp(page.webSocketDebuggerUrl);

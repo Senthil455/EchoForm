@@ -17,7 +17,7 @@ const SCENES = [
   { name: 'threshold', query: 'scene=threshold', wait: 3200 },
   { name: 'consent', query: 'scene=consent', wait: 2500 },
   { name: 'attuning-synthetic', query: 'scene=attuning&mode=synthetic&seed=28475924', wait: 4200 },
-  { name: 'alive-synthetic', query: 'scene=alive&mode=synthetic&seed=28475924&debug=1', wait: 12000 },
+  { name: 'alive-synthetic', query: 'scene=alive&mode=synthetic&seed=28475924', wait: 12000 },
   { name: 'echo', query: 'scene=echo&seed=28475923&palette=2', wait: 4000 },
   { name: 'archive', query: 'scene=archive', wait: 2500 },
 ];
@@ -84,7 +84,7 @@ async function main() {
       '--no-first-run',
       '--no-default-browser-check',
       '--hide-scrollbars',
-      '--window-size=1440,900',
+      `--window-size=${WIDTH},${HEIGHT}`,
       '--force-device-scale-factor=1',
       '--enable-unsafe-swiftshader',
       '--disable-background-timer-throttling',
@@ -161,10 +161,6 @@ async function main() {
           hudTime: document.querySelector('.hud-time')?.textContent ?? null,
           hudPulse: document.querySelector('.hud-value')?.textContent ?? null,
           error: document.querySelector('.session-error h2')?.textContent ?? null,
-          world: window.__echoformWorld ?? null,
-          frame: window.__echoformFrame ?? null,
-          organism: window.__echoformOrganism ?? null,
-          organismDebug: window.__echoformOrganismDebug ?? null,
           layout: (() => {
             const node = document.querySelector('.consent') || document.querySelector('.screen');
             if (!node) return null;
@@ -204,12 +200,6 @@ async function main() {
         );
       }
       if (extra != null) console.log(`[qa]   extra=${JSON.stringify(extra)}`);
-      if (state.result.value.world) {
-        console.log(`[qa]   world=${JSON.stringify(state.result.value.world)}`);
-      }
-      if (state.result.value.organismDebug) {
-        console.log(`[qa]   organism=${JSON.stringify(state.result.value.organismDebug)}`);
-      }
     }
 
     fs.writeFileSync(path.join(OUT, 'cdp-report.json'), JSON.stringify(report, null, 2));

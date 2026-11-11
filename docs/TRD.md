@@ -81,7 +81,7 @@ The architecture is deliberately local-first:
 │ Electron main process (Node, CommonJS)                             │
 │                                                                    │
 │  main.cjs                                                          │
-│   ├─ BrowserWindow (contextIsolation, sandbox, no nodeIntegration) │
+│   ├─ BrowserWindow (contextIsolation, no nodeIntegration; sandbox disabled for composed preload) │
 │   ├─ bindSmartSpectraIpc(win)  ← SDK native pipeline owner          │
 │   ├─ IPC: settings / safeStorage / save artwork / open external     │
 │   ├─ permission handler: camera only, local page only               │
@@ -189,7 +189,7 @@ Rules:
 - Construct only after the user chooses camera mode and provides a key.
 - Subscribe to all events before `start()`.
 - `start()` is awaited and may reject (auth, camera, network).
-- `stop()` is called on session end, pause-with-release, window close, and fatal errors.
+- `stop()` is called on session end, window close, and fatal errors.
 - `destroy()` is called after `stop()`; only once.
 - A new session constructs a new SDK instance because `requestedMetrics` is fixed per instance.
 - `reset()` is used only after a `kError` state; otherwise `start()` after a clean `stop()`.
@@ -403,7 +403,7 @@ Rate-limited: uniform changes are interpolated/damped; no parameter may jump mor
       <Core />               // inner ember + outer membrane
       <PulseRings />         // 3 rings
       <PresenceOrganism />   // line-segment procedural growth
-      <SporeDust />          // 600 larger points
+      <SporeDust />          // 80–220 larger points by quality tier
       <GroundPool />         // radial shimmer plane
     </group>
     <CameraRig />
@@ -443,7 +443,7 @@ Rate-limited: uniform changes are interpolated/damped; no parameter may jump mor
 - `uGrowth` rises with session time and signal presence; max 1 at ~4 minutes. In replay, uses the saved duration to set a static growth.
 
 **SporeDust**
-- 600 points, larger, slower, parallax depth; subtle pulse synchronization.
+- 80 / 150 / 220 points by quality tier, larger and slower with parallax depth.
 
 **GroundPool**
 - A 40×40 plane at y = -2.4 with radial gradient shader and faint noise waves; additive/soft.
@@ -478,7 +478,7 @@ Palettes are applied through uniforms; UI accent remains CSS-driven (ember/coppe
 | --- | --- |
 | Draw calls | < 30 |
 | Triangles | < 250k |
-| Particles (high) | 48k breath + 600 dust |
+| Particles (high) | 5.2k breath-field points + 220 spores |
 | Texture memory | < 64 MB (no external textures) |
 | Renderer heap | < 500 MB steady state |
 | Frame time p95 | < 33 ms at 1280×800 |
@@ -607,7 +607,7 @@ Echoes: array of `SessionSummary`, max 24, newest first.
 
 ### 10.2 API key storage (main)
 
-- Path: `app.getPath('userData')/echoform-key.bin`.
+- Path: `app.getPath('userData')/credentials.enc`.
 - If `safeStorage.isEncryptionAvailable()`:
   - `safeStorage.encryptString(key)` → buffer;
   - write atomically (temp + rename);
@@ -633,7 +633,7 @@ Echoes: array of `SessionSummary`, max 24, newest first.
 
 - `contextIsolation: true`
 - `nodeIntegration: false`
-- `sandbox: true` (if the composing preload supports it; otherwise `sandbox: false` with documented rationale)
+- `sandbox: false` because the composing preload requires `require()` to load the official SmartSpectra preload module; `contextIsolation: true`, `nodeIntegration: false`, strict CSP, local-only navigation, and the narrow preload bridge remain enabled.
 - `webSecurity: true`
 - `allowRunningInsecureContent: false`
 - Popups denied; navigation prevented; only the bundled page loads.
@@ -809,8 +809,8 @@ Matrix build on macOS, Windows, Ubuntu runners; each builds natively. Upload art
 ## 17. Open technical questions
 
 1. Does `@smartspectra/node-sdk-3.4.0` cardio require a specific key entitlement? Test when a key is available.
-2. Is `sandbox: true` compatible with a composing preload that requires the SDK preload? Test; fall back if needed.
-3. Does the packaged Windows build resolve `smartspectra_capi.dll` from `resources/smartspectra/` with the current binding? Verify with a packaged smoke test.
+2. The composing preload requires sandbox to be disabled; retain the other renderer isolation controls.
+3. The packaged Windows build resolves `smartspectra_capi.dll` from `resources/smartspectra/`; synthetic packaged smoke test passed. A live-key test remains pending.
 4. What is the actual latency from breath change to stable `breathing.rate` update? Tune visual smoothing after live test.
 5. Does `document.fonts.ready` include Fontsource variable fonts in Electron? Verify artwork typography.
 

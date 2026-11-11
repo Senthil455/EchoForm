@@ -3,7 +3,7 @@
 > **Challenge:** Presage SmartSpectra SDK Challenge
 > **Tag:** `#presagechallenge`
 > **Prize categories:** Best Overall Human-Sensing Experience · Most Creative or Delightful Use · Best Thoughtful Real-World Use
-> **Status:** Ready — video link placeholder remains; repo URL filled.
+> **Status:** Submission draft and Windows package are ready; public demo video and live-key validation remain pending.
 
 ---
 
@@ -24,7 +24,7 @@ There is nothing to click. No score, no dashboard, no diagnosis. When you leave,
 ECHOFORM is a complete Electron + React + Three.js application, not a mockup.
 
 - **Live sensing:** Presage SmartSpectra measures breathing and pulse from the camera on-device.
-- **A living world:** breath drives a 48,000-particle field and flowing ribbons; pulse drives a shader core and three expanding echo rings; a seeded organism grows over the session.
+- **A living world:** breath drives thousands of particles and flowing ribbons; pulse drives a shader core and three expanding echo rings; a seeded organism grows over the session.
 - **Adaptive sound:** an original Web Audio soundscape follows breath and pulse. Off by default.
 - **An ending:** the session contracts into a locally generated 1600×2000 Echo Print, downloadable as a PNG.
 - **A memory:** optionally save a small aggregate summary and replay the world later — without the camera.
@@ -36,7 +36,7 @@ No video is recorded. No raw signals are saved. No accounts. No backend.
 
 ## Demo
 
-**Video:** [ADD PUBLIC DEMO VIDEO LINK]
+**Video:** [Add public demo video link after recording]
 
 **Repository:** https://github.com/Senthil455/EchoForm
 
@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-Live mode needs a Presage API key from <https://physiology.presagetech.com/>. You can paste it in the app; it is encrypted with the OS keychain when you choose "remember". If you do not have a key, choose **Explore with synthetic signals** to see the complete experience.
+Live mode needs a Presage API key from <https://physiology.presagetech.com/>. You can paste it in the app; it is encrypted with the OS keychain when you choose "remember". If you do not have a key, choose **Explore with synthetic signals** to see the complete experience. The packaged Windows build has been smoke-tested in synthetic mode; live measurement still needs a valid key and camera session.
 
 **Platform tested:** Windows 11 x64. The SDK also supports macOS arm64 and Linux x64.
 
@@ -120,9 +120,9 @@ That restraint is the product. It makes the experience safe to try, easy to trus
 
 **Camera consent**
 
-- The camera is requested only after an explicit consent acknowledgement and a "Use my camera" action.
+- The camera is requested only after the consent screen, a key, and the explicit "Use my camera" action.
 - A live preview shows what the camera sees.
-- The camera is released on session end, pause-with-release, window close, and quit.
+- The camera is released on session end, window close, and quit.
 - Choosing synthetic mode never requests the camera.
 
 **What is processed**

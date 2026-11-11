@@ -1393,6 +1393,32 @@ button:disabled {
   color: rgba(159, 190, 139, 0.5);
 }
 
+.attuning.has-error .attune-lede {
+  display: none;
+}
+
+.attuning.has-error .attune-title {
+  font-size: clamp(34px, 4vw, 52px);
+}
+
+.attuning.has-error .attune-stage {
+  width: clamp(150px, 20vh, 210px);
+  margin-top: 12px;
+}
+
+.attuning.has-error .attune-error {
+  margin-top: 12px;
+  padding-top: 14px;
+}
+
+.attuning.has-error .attune-error-copy {
+  line-height: 1.55;
+}
+
+.attuning.has-error .attune-error-actions {
+  margin-top: 14px;
+}
+
 .attune-error {
   width: min(640px, 88vw);
   margin-top: 16px;
