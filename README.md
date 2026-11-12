@@ -31,7 +31,7 @@ npm run build
 npm run pack:win
 ```
 
-The Windows installer is written to `dist/`. The packaged Windows app has been smoke-tested in synthetic mode. macOS and Linux build scripts are included but have not been validated on those platforms.
+The Windows installer is written to `dist/`. The packaged Windows app has been smoke-tested in synthetic mode and its live startup path was exercised with a valid key. The camera pipeline stayed active during that smoke test, but it did not produce a confirmed face signal or physiological readings in the test environment. macOS and Linux build scripts are included but have not been validated on those platforms.
 
 ### Live mode
 
@@ -79,7 +79,7 @@ Suggested 2–3 minute demo: introduce the consent screen and synthetic option; 
 
 - The camera is only requested after you choose **Use my camera** and confirm the operating-system prompt.
 - ECHOFORM never records, stores, or uploads video. No raw signals are saved.
-- No accounts, analytics, ads, crash reporter, or backend. The SDK contacts Presage only to validate your API key; optional aggregate SDK telemetry is off by default.
+- No ECHOFORM accounts, analytics, ads, crash reporter, or backend. Live use contacts Presage for SDK authentication and required resources. Optional SDK diagnostics are off by default; if enabled, they include device and session diagnostics, not video or measured vital values. Authenticated requests may be associated with your Presage account.
 - Saved echoes hold only aggregate numbers, a date, and a random seed — no health data, no face data.
 - Delete all local data from inside the app at any time.
 

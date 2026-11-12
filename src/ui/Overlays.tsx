@@ -18,13 +18,13 @@ const PRIVACY_POINTS = [
   },
   {
     icon: WifiOff,
-    title: 'One narrow network use',
-    body: 'Live sensing contacts Presage to validate your SDK key and gate the service. ECHOFORM has no backend, no analytics, and no third-party scripts.',
+    title: 'Live SDK network use',
+    body: 'Live sensing contacts Presage for key authentication and required SDK resources. ECHOFORM has no backend, analytics, or third-party scripts.',
   },
   {
     icon: ShieldCheck,
     title: 'Telemetry is opt-in',
-    body: 'The SDK telemetry switch is off by default. You can change it here or on the consent screen. It contains aggregate SDK quality data, not camera video or signal values.',
+    body: 'The SDK diagnostics switch is off by default. When enabled, Presage receives device, session, performance, and validation details. It excludes video and measured vital values; authenticated requests may be associated with your Presage account.',
   },
   {
     icon: HardDrive,
@@ -121,8 +121,8 @@ export function PrivacyPanel({
       <Toggle
         checked={prefs.telemetry}
         onChange={onTelemetry}
-        label="Share anonymous SDK telemetry"
-        description="Applies to the Presage SDK only. Off by default."
+        label="Share SDK diagnostics"
+        description="Presage receives device, session, performance, and validation details. No video or vital values. Off by default."
       />
 
       <div className="privacy-delete">
@@ -246,7 +246,7 @@ export function SettingsSheet({
         <Toggle
           checked={prefs.telemetry}
           onChange={(telemetry) => onChange({ telemetry })}
-          label="Share SDK telemetry"
+          label="Share SDK diagnostics"
           description="Off by default. Aggregate SDK quality data only."
         />
         <button type="button" className="settings-link" onClick={onPrivacy}>

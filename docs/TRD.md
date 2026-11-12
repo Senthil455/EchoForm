@@ -15,7 +15,7 @@ The architecture is deliberately local-first:
 
 - **On-device measurement:** SmartSpectra computes metrics locally.
 - **No backend:** no accounts, no analytics, no uploads.
-- **Network only for SDK gating:** the SDK authenticates the API key with Presage.
+- **SDK network use:** live measurement authenticates with Presage and can retrieve required SDK resources; optional diagnostics are off by default.
 - **Persistence only on request:** saved echoes contain aggregate numbers and a seed, not raw signals.
 
 ---
@@ -277,9 +277,9 @@ Hints are guidance for signal quality, never health advice.
 ### 5.9 Telemetry
 
 - `enableTelemetry: false` by default.
-- The consent/settings UI explains the SDK's aggregate telemetry and lets the user opt in.
+- The consent/settings UI explains SDK diagnostics and lets the user opt in. These can include device, session, performance, and validation details; authenticated requests may be associated with the Presage account.
 - ECHOFORM itself has no analytics, crash reporting, or remote logging.
-- The SDK's network gating is disclosed separately from telemetry.
+- SDK authentication/resource requests are disclosed separately from optional diagnostics.
 
 ### 5.10 Scheduling and performance
 

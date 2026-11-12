@@ -20,11 +20,11 @@ flowchart LR
     Art --> Store[(Local Echo Archive)]
     Key[(OS-encrypted key)] --> SDK
 
-    SDK -.->|key validation only| Presage[(Presage auth service)]
+    SDK -.->|authentication, SDK resources, optional diagnostics| Presage[(Presage services)]
     Store -.->|replay summary| Engine
 ```
 
-**Trust boundary:** camera frames and metrics stay inside the desktop app. The only network call is the SDK's key validation/gating.
+**Trust boundary:** camera frames and measured values stay inside the desktop app. Live sessions contact Presage for authentication and required SDK resources. Optional SDK diagnostics are disabled by default; when enabled they include device, session, performance, and validation details, and authenticated requests may be associated with the Presage account.
 
 ---
 

@@ -332,7 +332,7 @@ A dark, mineral, botanical atmosphere — closer to a night garden or a deep-sea
 
 > Before we begin
 >
-> ECHOFORM uses your camera to sense breath and pulse. The measurement happens on this device, inside the Presage SmartSpectra SDK. Your video is never recorded, uploaded, or shared by ECHOFORM. A network connection is used only to validate the SDK key. You can leave at any time and the camera turns off.
+> ECHOFORM uses your camera to sense breath and pulse. Measurement runs on this device inside the Presage SmartSpectra SDK. ECHOFORM never records or uploads your video. Live sensing contacts Presage for SDK authentication and required resources. Optional SDK diagnostics are off by default. You can leave at any time and the camera turns off.
 >
 > [ Use my camera ] [ Explore with synthetic signals ]
 >
@@ -378,8 +378,8 @@ A dark, mineral, botanical atmosphere — closer to a night garden or a deep-sea
 >
 > - Video frames are processed on this device by the SmartSpectra SDK.
 > - ECHOFORM does not record, store, or upload video.
-> - The SDK contacts Presage only to validate your API key.
-> - SDK telemetry is off by default. You can opt in.
+> - Live SDK use contacts Presage for authentication and required resources.
+> - Optional SDK diagnostics are off by default. If enabled, they include device/session quality details, not video or measured vital values; authenticated requests may be associated with your Presage account.
 > - Saved echoes contain only aggregate numbers, a seed, and a date.
 > - Delete all local data at any time.
 >

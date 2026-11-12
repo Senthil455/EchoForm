@@ -3,7 +3,7 @@
 > **Challenge:** Presage SmartSpectra SDK Challenge
 > **Tag:** `#presagechallenge`
 > **Prize categories:** Best Overall Human-Sensing Experience · Most Creative or Delightful Use · Best Thoughtful Real-World Use
-> **Status:** Submission draft and Windows package are ready; public demo video and live-key validation remain pending.
+> **Status:** Submission draft and Windows package are ready; public demo video and confirmed live face/vital readings remain pending.
 
 ---
 
@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-Live mode needs a Presage API key from <https://physiology.presagetech.com/>. You can paste it in the app; it is encrypted with the OS keychain when you choose "remember". If you do not have a key, choose **Explore with synthetic signals** to see the complete experience. The packaged Windows build has been smoke-tested in synthetic mode; live measurement still needs a valid key and camera session.
+Live mode needs a Presage API key from <https://physiology.presagetech.com/>. You can paste it in the app; it is encrypted with the OS keychain when you choose "remember". If you do not have a key, choose **Explore with synthetic signals** to see the complete experience. The packaged Windows build passed synthetic and live-startup smoke tests with a valid key. The SDK stayed active during the live smoke test, but face detection and physiological readings were not confirmed in the test environment.
 
 **Platform tested:** Windows 11 x64. The SDK also supports macOS arm64 and Linux x64.
 
@@ -73,9 +73,15 @@ const sdk = new SmartSpectraSDK({
     MetricType.PULSE_RATE,
   ],
   enableTelemetry: false, // ECHOFORM default
+  sendTimeoutMs: 120_000,
 });
 
-sdk.on('streamAvailable', (stream) => { preview.srcObject = stream; });
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: false,
+  video: { width: { ideal: 640, max: 640 }, height: { ideal: 480, max: 480 }, frameRate: { ideal: 30, max: 30 } },
+});
+preview.srcObject = stream;
+sdk.useMediaStream(stream); // host owns and stops this stream
 sdk.on('metrics', (buf) => {
   const m = decodeMetrics(buf);
   engine.ingest(m);
@@ -96,7 +102,7 @@ The live signals and their visual mapping:
 | HRV (optional) | Slow orbital/organism drift (stretch) |
 | Face expression (optional) | Abstract weather accent only — never an emotion label (stretch) |
 
-The measurement is on-device. The network is used only for SDK key validation (and opt-in aggregate telemetry). **The world is driven by live signals, not a prerecorded loop.**
+The SDK measures on-device. Live SDK use contacts Presage for authentication and required resources. Optional SDK diagnostics are off by default; if enabled, they include device, session, performance, and validation details, not video or measured values. Authenticated requests may be associated with the Presage account. **The world is driven by live signals, not a prerecorded loop.**
 
 ---
 
@@ -152,13 +158,13 @@ That restraint is the product. It makes the experience safe to try, easy to trus
 **Sharing**
 
 - ECHOFORM has no backend, analytics, ads, crash reporter, or accounts.
-- Presage receives the API key for validation; if you opt in, it may receive aggregate SDK telemetry.
+- Presage authenticates the API key and may serve required SDK resources. If you opt in, the SDK may send device/session diagnostics over an authenticated channel; these exclude video frames and measured vital values, and may be associated with the Presage account.
 - No AI services are used. The Echo Print is generated locally with Canvas 2D.
 
-**SDK telemetry**
+**Optional SDK diagnostics**
 
 - Off by default (`enableTelemetry: false`).
-- If enabled, Presage's SDK sends one aggregate session summary (SDK/runtime/build, session shape, performance counters, validation counts, coarse error code, timestamp). It contains no raw video, no measured values, no user or stable device identifiers.
+- If enabled, Presage's SDK may send device/SDK details, session shape, performance counters, validation counts, coarse error codes, and timestamps. Session diagnostics exclude raw video and measured vital values. Authenticated requests may be associated with the Presage account; ECHOFORM does not call the SDK's device-readiness report API.
 - You can turn it off at any time.
 
 Full disclosure: `docs/PRIVACY.md`. The consent screen shows the same commitments before camera access.
@@ -212,7 +218,7 @@ If you build something with a camera, give the person a way to leave. Then make 
 - [ ] Consent and Data Handling section included
 - [ ] Prize categories noted
 - [ ] No secrets, API keys, or personal data in repo, video, or transcript
-- [ ] Live test completed on the demo machine
-- [ ] Packaged app tested
+- [ ] Live face detection and physiological readings confirmed on the demo machine
+- [x] Packaged app smoke-tested (synthetic and live startup)
 - [ ] Optional agent session uploaded and set to public
 - [ ] Links tested in an incognito window

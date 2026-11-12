@@ -163,12 +163,12 @@ These are intentionally **not** required for submission, but show where the conc
 | --- | --- |
 | Documentation (BRD/PRD/TRD/architecture/privacy) | Complete |
 | Renderer app shell + state machine | Complete |
-| Live SmartSpectra integration | Complete (live key test pending) |
+| Live SmartSpectra integration | Startup/pipeline smoke-tested with a valid key; face detection and physiological readings not confirmed in the test environment |
 | Synthetic mode | Complete |
 | Generative world | Complete |
 | Audio | Complete |
 | Echo Print + archive + replay | Complete |
 | Consent/privacy UI | Complete |
-| Windows packaging | Complete (packaged synthetic smoke test passed) |
+| Windows packaging | Complete (packaged synthetic and live-startup smoke tests passed) |
 | Demo video | Pending |
 | DEV submission | Draft complete; publish pending |

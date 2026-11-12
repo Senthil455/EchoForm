@@ -41,7 +41,7 @@ const FACTS = [
   },
   {
     icon: WifiOff,
-    text: 'The network is contacted only to validate your SDK key with Presage. There is no ECHOFORM backend.',
+    text: 'Live sensing contacts Presage for authentication and required SDK resources. Optional SDK diagnostics are off by default. ECHOFORM has no backend.',
   },
   {
     icon: HardDrive,
@@ -158,8 +158,8 @@ export function Consent({
               <Toggle
                 checked={telemetry}
                 onChange={onTelemetry}
-                label="Share anonymous SDK telemetry"
-                description="Off by default. This is the Presage SDK's aggregate quality telemetry, not video or signal values."
+                label="Share SDK diagnostics"
+                description="Off by default. If enabled, Presage receives device, session, performance, and validation details—not video or vital values. Authenticated requests may be associated with your Presage account."
               />
             </div>
 

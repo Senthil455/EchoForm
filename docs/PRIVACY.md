@@ -2,7 +2,7 @@
 
 > This document is the full disclosure referenced by the in-app consent screen and the DEV challenge submission. It describes what ECHOFORM and the Presage SmartSpectra SDK actually do in this repository.
 >
-> **Last updated:** November 9, 2026
+> **Last updated:** November 11, 2026
 
 ---
 
@@ -12,8 +12,8 @@
 - Breath, pulse, and optional face signals are measured **on your device** by the Presage SmartSpectra SDK.
 - ECHOFORM **does not record, store, or upload video**.
 - ECHOFORM has **no accounts, analytics, ads, or backend**.
-- A network connection is used by the SDK **only to validate your API key** (and, if you opt in, to send aggregate SDK telemetry).
-- SDK telemetry is **off by default** in ECHOFORM.
+- Live sessions contact Presage for SDK authentication and required SDK resources. Optional SDK diagnostics are **off by default**.
+- SDK diagnostics are **off by default** in ECHOFORM.
 - A saved echo contains **only aggregate numbers, a date, and a random seed** — no raw signals, no video, no face data.
 - You can delete all local data at any time.
 
@@ -66,11 +66,11 @@ ECHOFORM does not:
 
 ECHOFORM uses the **Presage SmartSpectra SDK** (`@smartspectra/node-sdk` 3.4.x) in an Electron app.
 
-- The renderer captures frames from the camera `MediaStream`.
+- ECHOFORM acquires a video-only camera `MediaStream` at up to 640×480 / 30 fps and supplies it to the renderer-side SDK.
 - Frames are sent over an in-process MessagePort to the Electron main process.
 - The native SmartSpectra pipeline computes metrics **on your device**.
 - Metric results are returned to the renderer, decoded, smoothed, and used to drive the world.
-- The SDK requires a network connection to authenticate/validate your API key and subscription. This is **gating**, not remote measurement. The SDK documentation states that metric computation happens on-device.
+- The SDK requires network access for authentication and may retrieve required SDK resources. This is not remote measurement: the SDK computes metrics on-device. ECHOFORM has no backend.
 
 The frame buffers are transient. ECHOFORM does not write them to disk, and the app's code does not retain them after they are handed to the SDK.
 
@@ -119,10 +119,11 @@ ECHOFORM has no backend, no analytics SDK, no crash reporter, no remote fonts, a
 
 The SDK contacts Presage to:
 
-- validate your API key and subscription (required for live measurement);
-- optionally, send aggregate SDK telemetry (see Section 6).
+- authenticate your API key and account (required for live measurement);
+- retrieve required SDK resources when needed;
+- optionally, send SDK diagnostics (see Section 6).
 
-The SDK's documentation states that these requests use an authenticated, TLS-pinned channel. Your API key is sent to Presage for validation; it is not sent to any other party. Presage's privacy policy: <https://api.physiology.presagetech.com/privacypolicy>.
+The SDK documents authenticated, TLS-pinned requests. The SDK uses your key for authentication with Presage; ECHOFORM does not send it to another party. See Presage's [SDK telemetry and privacy notes](https://smartspectra.presagetech.com/docs/telemetry-and-privacy/) and [privacy policy](https://api.physiology.presagetech.com/privacypolicy).
 
 ### 5.3 No AI services
 
@@ -136,7 +137,7 @@ The consent and settings screens may link to Presage's developer portal and docu
 
 ## 6. SDK telemetry
 
-The SmartSpectra SDK can send **one aggregate diagnostic summary per measurement session**. Per Presage's documentation, it contains:
+When enabled, the SmartSpectra SDK can send a diagnostic summary per measurement session. Presage documents that it can contain:
 
 - SDK build/version and package origin;
 - runtime: platform, OS version, device model, CPU architecture, SDK binding;
@@ -145,7 +146,7 @@ The SmartSpectra SDK can send **one aggregate diagnostic summary per measurement
 - quality: counts of on-device validation states and a coarse error code for failed sessions;
 - a session timestamp.
 
-It **does not** contain raw video, measured values (pulse, breathing, HRV, pressure waveform), file paths, prompts, free-text errors, user identifiers, or stable device identifiers.
+The session summary does not include video frames or measured physiological values. SDK readiness diagnostics, if used, can include requested metrics, camera settings, performance measurements, and free-text diagnostic details; those details may include platform-provided paths or errors. ECHOFORM does not currently run device-readiness checks. Authenticated requests may be correlated with a Presage account, so ECHOFORM does not describe this diagnostics option as anonymous.
 
 ### 6.1 ECHOFORM's default
 
@@ -155,7 +156,7 @@ ECHOFORM constructs the SDK with:
 enableTelemetry: false
 ```
 
-unless you explicitly enable **Share anonymous SDK telemetry** in the consent/settings screen. The default is off. If you enable it, the SDK may send the aggregate summary described above over its authenticated channel. You can turn it off at any time; the next session will not start a telemetry session.
+unless you explicitly enable **Share SDK diagnostics** in the consent/settings screen. The default is off. If enabled, the SDK may send the session diagnostics described above over its authenticated channel. You can turn it off at any time; subsequent sessions will not start SDK diagnostics reporting.
 
 ### 6.2 ECHOFORM's own telemetry
 
@@ -252,8 +253,8 @@ For questions about this build, open an issue in the project repository. For Pre
 | Derived data storage | Only saved echo summaries, on explicit action |
 | Retention | User-controlled; per-echo delete and delete-all |
 | Deletion | In-app delete-all; exported artwork is user-managed |
-| SDK telemetry | Disabled by default; opt-in; aggregate only; disclosed |
-| Network | SDK key validation only; no ECHOFORM backend |
+| SDK diagnostics | Disabled by default; opt-in; session/device diagnostics, not video or measured values; disclosed |
+| Network | SDK authentication and required resources; optional diagnostics; no ECHOFORM backend |
 | Optional AI services | None |
 | Third parties | Presage (SDK auth/telemetry); no analytics/ads |
 | Accounts | None |
