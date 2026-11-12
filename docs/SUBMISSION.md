@@ -3,7 +3,7 @@
 > **Challenge:** Presage SmartSpectra SDK Challenge
 > **Tag:** `#presagechallenge`
 > **Prize categories:** Best Overall Human-Sensing Experience · Most Creative or Delightful Use · Best Thoughtful Real-World Use
-> **Status:** Submission draft and Windows package are ready; public demo video and confirmed live face/vital readings remain pending.
+> **Status:** Draft, screenshots, and Windows installer are ready. Remaining before publishing: record the public demo video with a confirmed live face/vital reading, replace the video placeholder, and run the final incognito link check.
 
 ---
 
@@ -36,7 +36,7 @@ No video is recorded. No raw signals are saved. No accounts. No backend.
 
 ## Demo
 
-**Video:** [Add public demo video link after recording]
+**Video:** [Add the public demo video link after recording — shot list in `docs/DEMO_VIDEO.md`]
 
 **Repository:** https://github.com/Senthil455/EchoForm
 
@@ -50,6 +50,53 @@ npm run dev
 Live mode needs a Presage API key from <https://physiology.presagetech.com/>. You can paste it in the app; it is encrypted with the OS keychain when you choose "remember". If you do not have a key, choose **Explore with synthetic signals** to see the complete experience. The packaged Windows build passed synthetic and live-startup smoke tests with a valid key. The SDK stayed active during the live smoke test, but face detection and physiological readings were not confirmed in the test environment.
 
 **Platform tested:** Windows 11 x64. The SDK also supports macOS arm64 and Linux x64.
+
+### Demo video plan (2:45, 1080p, 16:9)
+
+The final cut must contain **one uninterrupted live segment** with a valid Presage key: the HUD breath/pulse values must change and the world must visibly answer them. Synthetic footage is allowed, but it must stay labeled `SYNTHETIC STUDY` on screen. Never show the key, a personal file, or a previously saved personal echo.
+
+| Time | Shot | What the viewer sees |
+| --- | --- | --- |
+| 0:00–0:10 | Threshold | Dormant world, wordmark, "A world that exists only while you are present." |
+| 0:10–0:28 | Consent | Camera aperture, plain-language data note, synthetic and camera choices. |
+| 0:28–0:42 | Synthetic | The complete world on generated signals, clearly labeled. |
+| 0:42–0:55 | Live start | Key already entered; **Use my camera**, OS prompt, camera preview. |
+| 0:55–1:12 | Attuning | Ring fills, validation hints, first breath and pulse values. |
+| 1:12–1:42 | Breath | Particles contract on inhale, release on exhale; ribbons follow. |
+| 1:42–2:10 | Pulse | Core blooms per beat; three rings expand; optional sound. |
+| 2:10–2:24 | Growth | The seeded organism has visibly unfolded. |
+| 2:24–2:38 | End | World contracts into the Echo Print. |
+| 2:38–2:52 | Save + replay | Save the aggregate echo; replay without the camera; show the archive. |
+| 2:52–3:00 | Close | "No score. No diagnosis." / title line. |
+
+Recording notes: use a session-only key, even front lighting, a plain background, OBS at 1080p, and no notifications. Blur the camera preview in post if you prefer not to appear. Full checklist and narration: `docs/DEMO_VIDEO.md`.
+
+### What is verified today
+
+| Check | Result |
+| --- | --- |
+| Synthetic threshold → consent → attuning → alive → echo → save | Passed in development and in the packaged Windows app |
+| Replay → archive → delete controls | Passed in development; archived echoes replay without the camera |
+| Native Echo Print save through the Electron dialog | Passed in the packaged Windows app |
+| Invalid API key error and SDK teardown | Passed; camera stops, no frame-loop spam |
+| Live SDK startup with a valid key | Exercised; the SDK stayed active |
+| Live face detection and physiological readings | Not yet confirmed in the test environment |
+| `npm run typecheck` / `npm run build` | Passed |
+| Windows installer | Rebuilt with app icon; packaged synthetic flow and echo save re-checked |
+
+### Screenshots
+
+| The threshold | Consent before camera |
+| --- | --- |
+| ![ECHOFORM threshold](media/threshold.jpg) | ![Consent screen](media/consent.jpg) |
+| **The living world** | **Your echo** |
+| ![Synthetic ECHOFORM world](media/alive.jpg) | ![Echo Print ending](media/echo.jpg) |
+
+All screenshots use synthetic signals and are labeled as such in the app.
+
+![The echo shelf](media/archive.jpg)
+
+The echo shelf keeps only small aggregate worlds on this device — a seed, a handful of numbers, and the shape of a session. No video, frames, or raw signals.
 
 ---
 
@@ -99,8 +146,8 @@ The live signals and their visual mapping:
 | Breathing waveform / rate | Contracts the particle field on inhale, releases it on exhale; waves the ribbons; opens the ambient filter |
 | Pulse rate / confidence | Blooms the core once per beat; sends out echo rings; sets the heartbeat tempo |
 | Presence / signal quality | Fades the world when the signal is lost; recovers gently |
-| HRV (optional) | Slow orbital/organism drift (stretch) |
-| Face expression (optional) | Abstract weather accent only — never an emotion label (stretch) |
+| HRV (stretch) | Not used by the current world; the echo schema reserves an optional aggregate field for a future HRV layer |
+| Face expression (optional, opt-in) | A subtle, unlabeled atmospheric tint in the sky; no emotion category is displayed or stored |
 
 The SDK measures on-device. Live SDK use contacts Presage for authentication and required resources. Optional SDK diagnostics are off by default; if enabled, they include device, session, performance, and validation details, not video or measured values. Authenticated requests may be associated with the Presage account. **The world is driven by live signals, not a prerecorded loop.**
 
@@ -212,13 +259,17 @@ If you build something with a camera, give the person a way to leave. Then make 
 
 ## Submission checklist
 
-- [ ] DEV post uses the required template and includes `#presagechallenge`
-- [ ] Repository is public and contains setup instructions
+- [x] DEV post draft uses the required template and includes `#presagechallenge`
+- [x] Repository is public and contains setup instructions
 - [ ] Demo video is public and shows live Presage signals
-- [ ] Consent and Data Handling section included
-- [ ] Prize categories noted
-- [ ] No secrets, API keys, or personal data in repo, video, or transcript
+- [x] Consent and Data Handling section included
+- [x] Prize categories noted
+- [x] No secrets, API keys, or personal data in the repository
+- [ ] Final video and transcript checked for secrets and personal data
 - [ ] Live face detection and physiological readings confirmed on the demo machine
 - [x] Packaged app smoke-tested (synthetic and live startup)
+- [x] Windows installer built with the app icon
+- [x] Screenshots and demo-video plan included
 - [ ] Optional agent session uploaded and set to public
 - [ ] Links tested in an incognito window
+- [ ] Public demo link replaces the placeholder above

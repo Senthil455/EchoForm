@@ -397,12 +397,12 @@ flowchart LR
 
 1. **GPU-first:** signal response lives in shader uniforms, not React.
 2. **One frame loop:** scene-level `useFrame` updates all uniforms.
-3. **Budgeted particles:** 48k high / 32k medium / 18k low.
+3. **Budgeted particles:** 5.2k high / 3.3k medium / 1.9k low.
 4. **DPR cap:** 1.75.
 5. **No textures:** all procedural; avoids decode and memory.
 6. **Cheap postprocessing:** bloom only; vignette/grain in CSS.
 7. **Throttled UI:** 4 Hz snapshots; numbers animate with CSS transitions.
-8. **Adaptive quality:** frame-time monitor steps down particles/bloom.
+8. **Adaptive quality:** frame-time monitor steps down particle count and softens bloom intensity/radius; bloom stays enabled.
 9. **Bounded arrays:** no unbounded waveform history; summary aggregates only.
 10. **Lazy overlays:** heavy panels mount only when open.
 

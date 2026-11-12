@@ -17,8 +17,10 @@ export function Sky({ palette }: Props) {
       uTop: { value: new THREE.Color(palette.skyTop) },
       uBottom: { value: new THREE.Color(palette.skyBottom) },
       uAccent: { value: new THREE.Color(palette.accent) },
+      uWeather: { value: new THREE.Color(palette.coreHot) },
       uTime: { value: 0 },
       uPresence: { value: 0 },
+      uExpression: { value: 0 },
     }),
     [palette],
   );
@@ -29,6 +31,7 @@ export function Sky({ palette }: Props) {
     if (!u) return;
     u.uTime.value = s.t;
     u.uPresence.value = s.presence;
+    u.uExpression.value = s.expression;
   });
 
   return (

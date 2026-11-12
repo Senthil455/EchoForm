@@ -417,8 +417,10 @@ export const skyFragment = /* glsl */ `
 uniform vec3 uTop;
 uniform vec3 uBottom;
 uniform vec3 uAccent;
+uniform vec3 uWeather;
 uniform float uTime;
 uniform float uPresence;
+uniform float uExpression;
 
 varying vec3 vWorld;
 
@@ -429,7 +431,8 @@ void main() {
   float aurora = sin(dir.x * 3.6 + uTime * 0.045)
     * sin(dir.z * 2.4 - uTime * 0.032)
     * smoothstep(0.1, 0.85, h);
-  col += uAccent * max(0.0, aurora) * 0.025 * (0.4 + uPresence * 0.6);
+  vec3 auroraColor = mix(uAccent, uWeather, uExpression * 0.45);
+  col += auroraColor * max(0.0, aurora) * (0.025 + uExpression * 0.018) * (0.4 + uPresence * 0.6);
 
   // A quiet luminous depth behind the organism, so the horizon never reads
   // as flat black.
@@ -438,6 +441,12 @@ void main() {
   col += uAccent * halo * 0.055 * (0.35 + uPresence * 0.65);
   float horizon = exp(-abs(dir.y + 0.02) * 11.0);
   col += uAccent * horizon * 0.028 * (0.3 + uPresence * 0.7);
+
+  // Opt-in expression weather: a slow, unlabeled atmospheric tint. It never
+  // renders a category or an emotion name.
+  float weather = uExpression * smoothstep(0.15, 0.8, h)
+    * (0.55 + 0.45 * sin(uTime * 0.07 + dir.x * 2.2));
+  col += uWeather * weather * 0.022 * (0.4 + uPresence * 0.6);
 
   gl_FragColor = vec4(col, 1.0);
 }

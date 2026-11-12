@@ -162,12 +162,12 @@ Priority: **P0** = required for submission; **P1** = strong differentiator; **P2
 | ID | Requirement | Priority | Acceptance criteria |
 | --- | --- | --- | --- |
 | SNS-01 | Integrate `@smartspectra/node-sdk` renderer SDK | P0 | Code imports `SmartSpectraSDK` from `@smartspectra/node-sdk/renderer`; metrics decoded via `@smartspectra/node-sdk/messages` |
-| SNS-02 | Request breathing + cardio metrics | P0 | `breathingMetrics` and `cardioMetrics` requested; pulse and breath readouts appear when stable |
+| SNS-02 | Request breathing + pulse metrics | P0 | `CHEST_BREATHING`, `ABDOMEN_BREATHING`, `BREATHING_RATE`, and `PULSE_RATE` requested explicitly; pulse and breath readouts appear when stable |
 | SNS-03 | Display validation hints | P0 | `validationStatus` codes mapped to human guidance; no raw codes in primary UI |
 | SNS-04 | Handle lifecycle and errors | P0 | Start/stop/reset/destroy implemented; error banner with retry; camera release on end |
 | SNS-05 | Show quality/confidence honestly | P0 | Values marked "listening" until confidence/stable; no fabricated readings |
 | SNS-06 | Optional HRV layer | P2 | If HRV stable, a subtle orbital parameter changes; not shown as a medical metric |
-| SNS-07 | Optional face-expression weather | P1 | Off by default; explicit opt-in; abstract color/particle change only; no emotion labels |
+| SNS-07 | Optional face-expression weather | P1 | Off by default; explicit opt-in; subtle sky/aurora tint only; no emotion labels; no storage |
 | SNS-08 | Camera loss/background recovery | P1 | On track ended or error, world pauses and offers resume/reset |
 | SNS-09 | Synthetic mode | P0 | Deterministic, plausible signals; clearly labeled; no camera access |
 | SNS-10 | API key auth failure guidance | P0 | Typed error → human message + "Open developer portal" link + key field |
@@ -181,13 +181,13 @@ Priority: **P0** = required for submission; **P1** = strong differentiator; **P2
 | WLD-01 | Breathing drives a visible wind/particle field | P0 | Inhale/exhale direction changes within ~2s of a stable breath wave |
 | WLD-02 | Pulse drives a visible light/rhythm layer | P0 | Core pulses at measured rate; visible at 50–120 BPM |
 | WLD-03 | Session growth | P0 | A branching organism grows over the session; visible change after 30s |
-| WLD-04 | Signal-reactive palette | P1 | Palette shifts slowly with breath depth/HRV; no abrupt flashing |
+| WLD-04 | Seeded palette | P1 | A palette is chosen from the session seed; slow atmospheric drift only, no abrupt flashing |
 | WLD-05 | Awakening sequence | P0 | One orchestrated transition from dormant to alive; < 4s |
 | WLD-06 | Echo contract | P0 | End sequence contracts the world and reveals artwork |
 | WLD-07 | Reduced motion | P0 | Respects OS setting and in-app toggle; camera drift/particles reduced; no strobe |
 | WLD-08 | Adaptive quality | P1 | DPR/particle count lowers if frame time is high; no visible pop |
 | WLD-09 | Pause on blur | P1 | When window loses focus, world slows; camera can be released via pause |
-| WLD-10 | 30 fps floor | P0 | Measured on integrated GPU at 1280×800; postprocessing can be disabled |
+| WLD-10 | 30 fps floor | P0 | Measured on integrated GPU at 1280×800; particle count and bloom intensity/radius scale down without disabling bloom |
 
 ### 5.4 Audio
 
@@ -241,13 +241,13 @@ These mappings are **artistic design decisions**, not claims about the SDK's int
 
 | Live signal | World layer | Visual behavior | Audio behavior | Guardrail |
 | --- | --- | --- | --- | --- |
-| Breathing waveform / rate | **The Field** — 60k–90k particles + ribbons | Inhale draws particles inward and lifts them; exhale sends a slow wave outward; wind direction curls | Filtered noise swell and pad filter open on inhale | If no stable breath: slow ambient drift |
+| Breathing waveform / rate | **The Field** — 1.9k–5.2k particles + ribbons | Inhale draws particles inward and lifts them; exhale sends a slow wave outward; wind direction curls | Filtered noise swell and pad filter open on inhale | If no stable breath: slow ambient drift |
 | Pulse rate | **The Core** — central shader orb + concentric rings | Core blooms once per beat; rings expand with each beat; intensity follows confidence | Soft low thump at measured BPM | If no stable pulse: core breathes with a default 60 BPM |
 | Pulse confidence / stability | **Clarity** — glow sharpness and ring definition | High confidence = crisp core; low = diffuse, dim | High-pass opens gently | Never shown as "health score" |
 | HRV (optional) | **Orbit** — slow satellite paths | Orbital eccentricity/tilt drifts with RMSSD | A second, slower harmonic | Abstract only; not labeled as stress |
 | Session duration | **The Organism** — procedural branching structure | New branches/buds appear over time; final silhouette becomes artwork | Low drone gains a new voice every ~45s | Growth is time-based, not "performance" |
 | Breath variability | **Weather** — ribbon turbulence and palette | Gentle shifts in hue/temperature | Detune and reverb width | No abrupt changes; rate-limited |
-| Expression (optional) | **Fauna/weather accents** | A brief bloom or scatter; abstract colors | A chime cluster | Off by default; never labels an emotion |
+| Expression (optional) | **Weather** — sky/aurora tint | A slow, abstract atmospheric tint | A chime cluster | Off by default; never labels an emotion; no storage |
 | Presence (valid signal time) | **World opacity** | World fades toward dormant when signal is lost | Audio fades | Graceful, not punitive |
 
 ### 6.1 Smoothing and rate limits

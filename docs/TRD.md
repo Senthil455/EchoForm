@@ -401,8 +401,8 @@ Rate-limited: uniform changes are interpolated/damped; no parameter may jump mor
     <Sky />
     <fog>
     <group ref=worldGroup>
-      <BreathField />        // 30k–60k points, custom shader
-      <Ribbons />            // 6–8 additive strips
+      <BreathField />        // 1.9k–5.2k points, custom shader
+      <Ribbons />            // 8 additive strips
       <Core />               // inner ember + outer membrane
       <PulseRings />         // 3 rings
       <PresenceOrganism />   // line-segment procedural growth
@@ -421,10 +421,10 @@ Rate-limited: uniform changes are interpolated/damped; no parameter may jump mor
 - `BufferGeometry` with `position`, `aSeed`, `aRadius`, `aAngle`, `aHeight`, `aSize`.
 - Vertex shader: slow orbital drift, breath-driven radial contraction/expansion, vertical lift on inhale, curl turbulence.
 - Fragment shader: soft circular sprite, additive, color mixed between lumen and moss.
-- Point count: high 48k, medium 32k, low 18k; DPR cap 1.75.
+- Point count: high 5.2k, medium 3.3k, low 1.9k; DPR cap 1.75.
 
 **Ribbons**
-- 7 strips, each a `PlaneGeometry`-derived grid (2 × 80 segments) arranged radially.
+- 8 strips, each a `PlaneGeometry`-derived grid (2 × 80 segments) arranged radially.
 - Vertex shader waves vertices with breath and time; higher amplitude at the tip.
 - Additive, low opacity, no depth write.
 
@@ -456,9 +456,9 @@ Rate-limited: uniform changes are interpolated/damped; no parameter may jump mor
 - Fog color matches abyss.
 
 **Postprocessing**
-- Bloom only: `intensity ≈ 1.1`, `luminanceThreshold ≈ 0.12`, `mipmapBlur`.
+- Bloom only: `intensity ≈ 1.18` (1.0 at low quality), `luminanceThreshold ≈ 0.1` (0.08 at low quality), `radius ≈ 0.72` (0.62 at low quality), `mipmapBlur`. Bloom stays on at every quality tier.
 - CSS overlay supplies vignette and film grain (cheaper than GPU effects).
-- Disabled when reduced motion is on or when the frame-time monitor reports low performance.
+- Bloom stays enabled in reduced-motion and low-performance modes; those modes soften its intensity/radius instead of disabling it.
 
 ### 7.3 Palette
 
@@ -487,7 +487,7 @@ Palettes are applied through uniforms; UI accent remains CSS-driven (ember/coppe
 | Frame time p95 | < 33 ms at 1280×800 |
 | DPR | min(devicePixelRatio, 1.75) |
 
-Adaptive quality: monitor a 120-frame rolling average. If average frame time > 26 ms for 3s, step down particle count and disable bloom. If < 14 ms for 10s, step up (max once). No visible pop: scale opacity over 0.5s.
+Adaptive quality: monitor a 120-frame rolling average. If average frame time > 26 ms for 3s, step down particle count and soften bloom intensity/radius. If < 14 ms for 10s, step up (max once). Bloom remains enabled at low quality. No visible pop: scale opacity over 0.5s.
 
 ### 7.5 Reduced motion
 
@@ -800,7 +800,7 @@ Matrix build on macOS, Windows, Ubuntu runners; each builds natively. Upload art
 | Protobuf field name drift | Use SDK's generated `messages` decoder; type via `Metrics`; no hand-rolled schema |
 | Native runtime packaging | Follow official extraResources + `SMARTSPECTRA_CAPI_PATH`; test packaged build early |
 | Frame pump cost at 720p | SDK handles cloning; avoid extra copies; decode at event rate |
-| GPU performance | Particle budget, DPR cap, bloom toggle, adaptive quality |
+| GPU performance | Particle budget, DPR cap, bloom quality scaling, adaptive quality |
 | React StrictMode double-start | Idempotent lifecycle controller; explicit refs; no duplicate SDK instances |
 | Audio autoplay policy | Create/resume AudioContext only on user gesture |
 | Data leak via logs | Never log key or metrics payload; redact error messages; code review |
@@ -813,7 +813,7 @@ Matrix build on macOS, Windows, Ubuntu runners; each builds natively. Upload art
 
 1. Does `@smartspectra/node-sdk-3.4.0` cardio require a specific key entitlement? Test when a key is available.
 2. The composing preload requires sandbox to be disabled; retain the other renderer isolation controls.
-3. The packaged Windows build resolves `smartspectra_capi.dll` from `resources/smartspectra/`; synthetic packaged smoke test passed. A live-key test remains pending.
+3. The packaged Windows build resolves `smartspectra_capi.dll` from `resources/smartspectra/`; synthetic packaged smoke test and a live-key startup smoke test passed. Face detection and physiological readings remain unconfirmed in the test environment.
 4. What is the actual latency from breath change to stable `breathing.rate` update? Tune visual smoothing after live test.
 5. Does `document.fonts.ready` include Fontsource variable fonts in Electron? Verify artwork typography.
 
@@ -821,18 +821,18 @@ Matrix build on macOS, Windows, Ubuntu runners; each builds natively. Upload art
 
 ## 18. Acceptance checklist
 
-- [ ] Live SDK integration compiles and runs.
-- [ ] `decodeMetrics` returns breathing/cardio fields.
-- [ ] Values are smoothed and range-gated.
-- [ ] World reacts to breath and pulse independently.
-- [ ] Synthetic mode works without camera or key.
-- [ ] Consent/data panel matches implementation.
-- [ ] Telemetry off by default.
-- [ ] Key stored only via safeStorage and only on opt-in.
-- [ ] Echo artwork deterministic and downloadable.
-- [ ] Saved echoes contain only aggregates + seed.
-- [ ] Delete-all works.
-- [ ] Reduced motion works.
-- [ ] Performance target met.
-- [ ] Typecheck/build pass.
-- [ ] Packaged app launches.
+- [x] Live SDK integration compiles and runs (live-key startup smoke passed).
+- [ ] `decodeMetrics` returns breathing/cardio fields (not confirmed in the test environment).
+- [x] Values are smoothed and range-gated.
+- [x] World reacts to breath and pulse independently (verified with synthetic signals).
+- [x] Synthetic mode works without camera or key.
+- [x] Consent/data panel matches implementation.
+- [x] Telemetry off by default.
+- [x] Key stored only via safeStorage and only on opt-in.
+- [x] Echo artwork deterministic and downloadable.
+- [x] Saved echoes contain only aggregates + seed.
+- [x] Delete-all works.
+- [x] Reduced motion works.
+- [ ] Performance target met on integrated graphics (not measured).
+- [x] Typecheck/build pass.
+- [x] Packaged app launches.

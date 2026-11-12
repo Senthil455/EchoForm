@@ -85,7 +85,7 @@ function WorldState({ phase, reducedMotion, replayDuration }: Omit<Props, 'palet
     s.growth = damp(s.growth, growthTarget, 0.22, dt);
     s.echo = damp(s.echo, phase === 'echo' ? 1 : 0, phase === 'echo' ? 1.4 : 3.2, dt);
     s.hue = (Math.sin(t * 0.041) + 1) * 0.5;
-    s.expression = frame.expression ? frame.expression.score : 0;
+    s.expression = damp(s.expression, frame.expression ? frame.expression.score : 0, 0.8, dt);
     s.reduced = reducedMotion ? 1 : 0;
   });
 

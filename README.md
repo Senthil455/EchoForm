@@ -31,13 +31,13 @@ npm run build
 npm run pack:win
 ```
 
-The Windows installer is written to `dist/`. The packaged Windows app has been smoke-tested in synthetic mode and its live startup path was exercised with a valid key. The camera pipeline stayed active during that smoke test, but it did not produce a confirmed face signal or physiological readings in the test environment. macOS and Linux build scripts are included but have not been validated on those platforms.
+The Windows installer is written to `dist/ECHOFORM Setup 0.1.0.exe`; the unpacked app is in `dist/win-unpacked/`. The packaged Windows app has been smoke-tested in synthetic mode and its live startup path was exercised with a valid key. The camera pipeline stayed active during that smoke test, but it did not produce a confirmed face signal or physiological readings in the test environment. macOS and Linux build scripts are included but have not been validated on those platforms.
 
 ### Live mode
 
 1. Register for a Presage developer key at https://physiology.presagetech.com/.
-2. Launch ECHOFORM, choose **Use my camera**, paste your key, and confirm the camera prompt.
-3. The consent screen explains what is measured before the camera turns on.
+2. Launch ECHOFORM and read the consent screen. It explains what is measured before the camera turns on.
+3. Paste your key, choose **Use my camera**, and confirm the operating-system prompt.
 
 You can store the key encrypted by your OS ("Remember on this device") or keep it session-only. Without a key, choose **Explore with synthetic signals** — the complete experience runs on generated signals, no camera required.
 
@@ -49,9 +49,9 @@ You can store the key encrypted by your OS ("Remember on this device") or keep i
 | `npm run build` | Type-check (`tsc --noEmit`) + Vite production build |
 | `npm run start` | Run the app (`electron .`) |
 | `npm run typecheck` | Type-check only |
-| `npm run pack:win` | Build a Windows distributor with electron-builder |
-| `npm run pack:mac` | Build a macOS distributor with electron-builder |
-| `npm run pack:linux` | Build a Linux distributor with electron-builder |
+| `npm run pack:win` | Build a Windows installer with electron-builder |
+| `npm run pack:mac` | Build a macOS package with electron-builder |
+| `npm run pack:linux` | Build a Linux package with electron-builder |
 
 Platform tested: Windows 11 x64. The SmartSpectra SDK also supports macOS arm64 and Linux x64.
 
@@ -59,11 +59,17 @@ Platform tested: Windows 11 x64. The SmartSpectra SDK also supports macOS arm64 
 
 The screenshots below use generated signals so the experience can be reviewed without a camera or API key.
 
-| Living world | The Echo Print |
+| The threshold | Consent before camera |
 | --- | --- |
+| ![ECHOFORM threshold](docs/media/threshold.jpg) | ![Consent screen](docs/media/consent.jpg) |
+| **The living world** | **Your echo** |
 | ![A synthetic ECHOFORM world](docs/media/alive.jpg) | ![Echo Print ending](docs/media/echo.jpg) |
 
-Suggested 2–3 minute demo: introduce the consent screen and synthetic option; start a synthetic session and show breath/pulse responding in the world; end the session to reveal the Echo Print; save the echo, replay it without the camera, then show the archive and delete controls. If recording live mode, use your own valid Presage key and show camera consent before starting.
+![The echo shelf](docs/media/archive.jpg)
+
+The echo shelf keeps small aggregate worlds on this device — each holds a seed, a handful of numbers, and the shape of a session. No video, frames, or raw signals.
+
+**Demo video:** not recorded yet. The final 2:45 cut will include one uninterrupted live Presage segment, with the HUD values and world response visible. The shot list, narration, recording settings, and privacy checks are in [docs/DEMO_VIDEO.md](docs/DEMO_VIDEO.md). Synthetic footage will remain labeled on screen; the finished video will never show the API key or a personal echo.
 
 ## Project docs
 
@@ -73,6 +79,7 @@ Suggested 2–3 minute demo: introduce the consent screen and synthetic option; 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Feature map](docs/FEATURES.md)
 - [Camera consent and privacy](docs/PRIVACY.md)
+- [Demo video plan](docs/DEMO_VIDEO.md)
 - [Challenge submission draft](docs/SUBMISSION.md)
 
 ## Consent & privacy
@@ -80,7 +87,7 @@ Suggested 2–3 minute demo: introduce the consent screen and synthetic option; 
 - The camera is only requested after you choose **Use my camera** and confirm the operating-system prompt.
 - ECHOFORM never records, stores, or uploads video. No raw signals are saved.
 - No ECHOFORM accounts, analytics, ads, crash reporter, or backend. Live use contacts Presage for SDK authentication and required resources. Optional SDK diagnostics are off by default; if enabled, they include device and session diagnostics, not video or measured vital values. Authenticated requests may be associated with your Presage account.
-- Saved echoes hold only aggregate numbers, a date, and a random seed — no health data, no face data.
+- Saved echoes hold only aggregate numbers, a date, and a random seed — no raw signals, video, or face data.
 - Delete all local data from inside the app at any time.
 
 See `docs/PRIVACY.md` for the full camera consent and data handling disclosure.

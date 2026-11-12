@@ -1,5 +1,8 @@
 # ECHOFORM: A world that exists only while you are present
 
+<!-- Draft only. Replace the video link and confirm live face/vital readings before publishing. -->
+<!-- Canonical submission notes, screenshots, and checklist: docs/SUBMISSION.md. -->
+
 **Challenge:** Presage SmartSpectra SDK Challenge  
 **Tag:** `#presagechallenge`  
 **Prize categories:** Best Overall Human-Sensing Experience · Most Creative or Delightful Use · Best Thoughtful Real-World Use
@@ -21,7 +24,7 @@ There is nothing to click. No score, no dashboard, no diagnosis. When you leave,
 ECHOFORM is a complete Electron + React + Three.js application, not a mockup.
 
 - **Live sensing:** Presage SmartSpectra measures breathing and pulse from the camera on-device.
-- **A living world:** breath drives a 48,000-particle field and flowing ribbons; pulse drives a shader core and three expanding echo rings; a seeded organism grows over the session.
+- **A living world:** breath drives up to 5,200 additive particles and flowing ribbons; pulse drives a shader core and three expanding echo rings; a seeded organism grows over the session.
 - **Adaptive sound:** an original Web Audio soundscape follows breath and pulse. Off by default.
 - **An ending:** the session contracts into a locally generated 1600×2000 Echo Print, downloadable as a PNG.
 - **A memory:** optionally save a small aggregate summary and replay the world later — without the camera.
@@ -33,7 +36,7 @@ No video is recorded. No raw signals are saved. No accounts. No backend.
 
 ## Demo
 
-- **Video:** [ADD PUBLIC DEMO VIDEO LINK]
+- **Video:** [ADD PUBLIC DEMO VIDEO LINK] — record the live take first; shot list in `docs/DEMO_VIDEO.md`.
 - **Repository:** https://github.com/Senthil455/EchoForm
 - **Setup:** see the README. In short:
 
@@ -57,18 +60,32 @@ The app uses the official Node/Electron SDK:
 ```ts
 import {
   SmartSpectraSDK,
-  breathingMetrics,
-  cardioMetrics,
+  MetricType,
+  faceMetrics,
 } from '@smartspectra/node-sdk/renderer';
 import { decodeMetrics } from '@smartspectra/node-sdk/messages';
 
 const sdk = new SmartSpectraSDK({
   apiKey,
-  requestedMetrics: [...breathingMetrics, ...cardioMetrics],
+  requestedMetrics: [
+    MetricType.CHEST_BREATHING,
+    MetricType.ABDOMEN_BREATHING,
+    MetricType.BREATHING_RATE,
+    MetricType.PULSE_RATE,
+    ...(expressionsEnabled ? faceMetrics : []),
+  ],
   enableTelemetry: false, // ECHOFORM default
+  sendTimeoutMs: 120_000,
 });
 
-sdk.on('streamAvailable', (stream) => { preview.srcObject = stream; });
+// ECHOFORM owns the camera stream and stops it on session end.
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: false,
+  video: { width: { ideal: 640, max: 640 }, height: { ideal: 480, max: 480 }, frameRate: { ideal: 30, max: 30 } },
+});
+preview.srcObject = stream;
+sdk.useMediaStream(stream);
+
 sdk.on('metrics', (buf) => {
   const m = decodeMetrics(buf);
   engine.ingest(m);
@@ -84,9 +101,10 @@ The live signals and their visual mapping:
 | SmartSpectra signal | What it does in ECHOFORM |
 |---|---|
 | Breathing waveform / rate | Contracts the particle field on inhale, releases it on exhale; waves the ribbons; opens the ambient filter |
-| Pulse rate / waveform | Drives the shader core and three expanding echo rings; beats the audio core |
-| HRV | Modulates organism growth variability and ring expansion |
-| Expression weather | Abstract ambient tint shift — never rendered as an emotion label |
+| Pulse rate / confidence | Blooms the core once per beat; sends out three echo rings; sets the heartbeat tempo |
+| Presence / signal quality | Fades the world when the signal is lost; recovers gently |
+| HRV (stretch) | Not used by the current world; the echo schema reserves an optional aggregate field for a future HRV layer |
+| Face expression (optional, opt-in) | A subtle, unlabeled atmospheric tint in the sky; no emotion category is displayed or stored |
 
 ---
 
@@ -94,13 +112,13 @@ The live signals and their visual mapping:
 
 ### Camera consent
 
-The camera is not accessed until all of the following are true:
+A live session starts only when all of the following are true:
 
 1. You open ECHOFORM and read the consent screen.
-2. You check the consent acknowledgement.
+2. You enter a valid Presage API key.
 3. You select **Use my camera**.
-4. You provide a valid Presage API key.
-5. You confirm the OS/browser camera prompt.
+4. You confirm the operating-system camera prompt.
+5. Only then does the SDK start and the camera indicator turn on.
 
 If you select **Explore with synthetic signals**, the camera is never requested.
 
@@ -123,13 +141,14 @@ A live camera preview is shown in the app so you know exactly what the camera se
 ### Sharing
 
 - ECHOFORM has no backend, analytics, ads, crash reporter, or accounts.
-- Presage receives the API key for validation; if you opt in, it may receive aggregate SDK telemetry.
+- Presage authenticates the API key and may serve required SDK resources. If you opt in, the SDK may send session/device diagnostics over an authenticated channel; these exclude video frames and measured vital values, and may be associated with the Presage account.
 - No AI services are used. The Echo Print is generated locally with Canvas 2D.
 
 ### SDK telemetry
 
 - Off by default (`enableTelemetry: false`).
-- If enabled, Presage's SDK sends one aggregate session summary (SDK/runtime/build, session shape, performance counters, validation counts, coarse error code, timestamp). It contains no raw video, no measured values, no user or stable device identifiers.
+- If enabled, Presage's SDK may send SDK/runtime details, session shape, performance counters, validation counts, coarse error codes, and timestamps. Session diagnostics exclude video frames and measured physiological values. ECHOFORM does not call the SDK's device-readiness report API.
+- Authenticated requests may be associated with a Presage account, so ECHOFORM does not describe this option as anonymous.
 - You can turn it off at any time.
 
 Full disclosure: `docs/PRIVACY.md`. The consent screen shows the same commitments before camera access.

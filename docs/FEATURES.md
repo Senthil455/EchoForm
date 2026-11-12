@@ -30,8 +30,8 @@
 | 2.3 | Presence fade | Stable signal freshness | World dims when the signal is lost; recovers gently | Built |
 | 2.4 | Session growth | Time + presence | Procedural organism branches extend as the session continues | Built |
 | 2.5 | Breathing guide | Breathing rate | A pair of arcs paces with the measured rate, not a prescription | Built |
-| 2.6 | HRV orbit | HRV RMSSD | Slow satellite/organism tilt changes with HRV when stable | Planned (stretch) |
-| 2.7 | Expression weather | Face expression | Optional abstract palette/particle accent; no emotion labels | Planned (stretch) |
+| 2.6 | HRV orbit | HRV RMSSD | Roadmap: a slow orbital/organism tilt from stable HRV; the echo schema reserves an optional aggregate field | Planned (stretch) |
+| 2.7 | Expression weather | Face expression (opt-in) | Subtle, unlabeled sky/aurora tint; no emotion category is displayed or stored | Built |
 | 2.8 | Validation hints | SDK validation codes | Human guidance during attunement and live session | Built |
 | 2.9 | Synthetic signals | None (generated) | Same world, clearly labeled; no camera | Built |
 
@@ -118,8 +118,8 @@
 | 7.5 | Screen-reader live regions | Built |
 | 7.6 | Error boundary | Built |
 | 7.7 | Dev scene jump (`?scene=...`) for QA | Built |
-| 7.8 | Windows x64 packaging config | Built |
-| 7.9 | macOS/Linux packaging config | Built |
+| 7.8 | Windows x64 packaging config | Built and packaged |
+| 7.9 | macOS/Linux packaging config | Configured; not validated on those platforms |
 | 7.10 | Kiosk mode / auto-reset | Planned (roadmap) |
 | 7.11 | Multi-language UI | Planned (roadmap) |
 | 7.12 | Mobile/web deployment | Out of scope |
@@ -135,7 +135,7 @@
 | Functional app | Electron + React + Three.js | Runnable repo, setup instructions |
 | Code repository | GitHub | Public repo URL in submission |
 | Setup instructions | `README.md` | Clean install steps, key setup, packaging |
-| Demo video | Recorded walkthrough | Shows live signals and world response |
+| Demo video | `docs/DEMO_VIDEO.md` | Planned 2:45 live + synthetic walkthrough; not yet recorded |
 | Consent & data handling | Consent screen + `docs/PRIVACY.md` | Camera consent, storage, retention, deletion, telemetry |
 | No medical claims | Copy + design | "Signals, not conclusions"; no diagnosis |
 | No covert monitoring | Consent + camera indicator | Explicit start/stop; camera released |
@@ -169,6 +169,7 @@ These are intentionally **not** required for submission, but show where the conc
 | Audio | Complete |
 | Echo Print + archive + replay | Complete |
 | Consent/privacy UI | Complete |
-| Windows packaging | Complete (packaged synthetic and live-startup smoke tests passed) |
-| Demo video | Pending |
+| Windows packaging | Complete (packaged synthetic and live-startup smoke tests passed; installer built with app icon) |
+| Demo video | Pending; shot list, narration, and privacy checklist ready in `docs/DEMO_VIDEO.md` |
+| Screenshots | Complete (`docs/media/`) |
 | DEV submission | Draft complete; publish pending |
